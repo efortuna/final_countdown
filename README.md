@@ -1,2 +1,4 @@
 # final_countdown
-a ridiculous timer/countdown app
+
+a ridiculous timer/countdown app.
+
