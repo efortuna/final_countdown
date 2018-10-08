@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:final_countdown/matt/utils.dart';
+import 'package:final_countdown/matt/text_duration.dart';
 
 class Countdown extends StatefulWidget {
   Countdown({this.duration});
@@ -30,8 +30,9 @@ class _CountdownState extends State<Countdown>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _controller,
-      builder: (context, _) => Text(prettyPrintDuration(
-            Duration(seconds: _controller.value.floor()),
+      builder: (context, _) => TextDuration(
+              duration: Duration(
+            seconds: _controller.value.floor(),
           )),
     );
   }
