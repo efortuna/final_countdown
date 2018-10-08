@@ -9,7 +9,10 @@ class TextDuration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showSeparator = duration.inSeconds % 2 == 0;
-    return Text(prettyPrintDuration(duration, showSeparator));
+    return Text(
+      prettyPrintDuration(duration, showSeparator),
+      style: TextStyle(fontSize: 48.0),
+    );
     ;
   }
 }
