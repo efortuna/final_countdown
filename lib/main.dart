@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:final_countdown/matt/countdown_timer.dart';
+import 'package:final_countdown/matt/countdown_animation.dart';
 
 void main() => runApp(MyApp());
 

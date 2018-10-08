@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'package:final_countdown/matt/utils.dart';
+
 class Countdown extends StatefulWidget {
   Countdown({this.duration});
   final Duration duration;
@@ -26,16 +28,6 @@ class _CountdownState extends State<Countdown> {
 
   @override
   Widget build(BuildContext context) {
-    return Text(_prettyPrintDuration(remaining));
+    return Text(prettyPrintDuration(remaining));
   }
-}
-
-/// Returns a human-readable representation of a duration
-String _prettyPrintDuration(Duration duration) {
-  final minutes = duration.inMinutes;
-  final seconds = duration.inSeconds % 60;
-  final minutesStr = minutes >= 10 ? '$minutes' : '0$minutes';
-  final secondsStr = seconds >= 10 ? '$seconds' : '0$seconds';
-
-  return '$minutesStr:$secondsStr';
 }
