@@ -12,6 +12,9 @@ dependencies:
 
   cupertino_icons: ^0.1.2
   fx: ^0.0.1
+  flip_panel:
+    git: 
+      url: https://github.com/efortuna/flutter_flip_panel
 
 
 dev_dependencies:
@@ -20,3 +23,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets: 
+    - assets/brushed_metal.jpg

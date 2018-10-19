@@ -71,6 +71,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.2"
+  flip_panel:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "329aafde020e793103f93e6b4d1bbcbe3923a89d"
+      url: "https://github.com/efortuna/flutter_flip_panel"
+    source: git
+    version: "0.0.6"
   flutter:
     dependency: "direct main"
     description: flutter

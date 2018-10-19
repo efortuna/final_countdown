@@ -13,6 +13,5 @@ class TextDuration extends StatelessWidget {
       prettyPrintDuration(duration, showSeparator),
       style: TextStyle(fontSize: 48.0),
     );
-    ;
   }
 }
