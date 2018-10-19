@@ -76,7 +76,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "329aafde020e793103f93e6b4d1bbcbe3923a89d"
+      resolved-ref: "6e64ad462ace2f8f472738a56c9d36b2f32af76a"
       url: "https://github.com/efortuna/flutter_flip_panel"
     source: git
     version: "0.0.6"
