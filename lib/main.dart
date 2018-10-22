@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 //import 'package:final_countdown/matt/countdown_animation.dart';
-import 'package:final_countdown/emily/flip_clock.dart';
+//import 'package:final_countdown/emily/flip_clock.dart';
+import 'package:final_countdown/emily/grandfather_clock.dart';
 
 void main() => runApp(MyApp());
 
