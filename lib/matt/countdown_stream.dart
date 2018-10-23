@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:final_countdown/matt/utils.dart';
 
@@ -27,6 +28,8 @@ class CountdownTimer {
 }
 
 /// Use to maintain state between hot reloads
+/// Make sure you wrap this above the MaterialApp widget
+/// or hot reload will affect it
 class CountdownProvider extends InheritedWidget {
   CountdownProvider({
     Key key,
@@ -56,21 +59,18 @@ class Countdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CountdownProvider(
-      duration: const Duration(minutes: 15),
-      child: Center(
-        child: Builder(
-          builder: (context) => StreamBuilder(
-                stream: CountdownProvider.of(context)
-                    .countdown, //_countdown(const Duration(minutes: 15)),
-                builder: (context, AsyncSnapshot<Duration> snapshot) {
-                  if (snapshot.hasData)
-                    return Text('Time ${prettyPrintDuration(snapshot.data)}');
-                  else
-                    return Text('Waiting ...');
-                },
-              ),
-        ),
+    return Center(
+      child: Builder(
+        builder: (context) => StreamBuilder(
+              stream: _countdown(const Duration(
+                  minutes: 15)), //CountdownProvider.of(context).countdown,
+              builder: (context, AsyncSnapshot<Duration> snapshot) {
+                if (snapshot.hasData)
+                  return Text('Time ${prettyPrintDuration(snapshot.data)}');
+                else
+                  return Text('Waiting ...');
+              },
+            ),
       ),
     );
   }
