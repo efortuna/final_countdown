@@ -63,12 +63,19 @@ class Countdown extends StatelessWidget {
       child: Builder(
         builder: (context) => StreamBuilder(
               stream: _countdown(const Duration(
-                  minutes: 15)), //CountdownProvider.of(context).countdown,
+                  minutes: 1)), //CountdownProvider.of(context).countdown,
               builder: (context, AsyncSnapshot<Duration> snapshot) {
-                if (snapshot.hasData)
-                  return Text('Time ${prettyPrintDuration(snapshot.data)}');
-                else
-                  return Text('Waiting ...');
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return Text('Waiting ...');
+                  case ConnectionState.active:
+                    return Text('Time ${prettyPrintDuration(snapshot.data)}');
+                  case ConnectionState.done:
+                    return Text('Time\s up!');
+                  case ConnectionState.none:
+                    return Text(
+                        'Entered oblivion; this should never have happened');
+                }
               },
             ),
       ),
