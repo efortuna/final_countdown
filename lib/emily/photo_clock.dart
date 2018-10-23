@@ -11,17 +11,17 @@ class Countdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: ImagePicker.pickImage(source: ImageSource.camera),
-      builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-        if (snapshot.hasData) {
-          /*Future.delayed(Duration(seconds: 3)).then((_) {
+        future: ImagePicker.pickImage(source: ImageSource.camera),
+        builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
+          if (snapshot.hasData) {
+            /*Future.delayed(Duration(seconds: 3)).then((_) {
             Navigator.push(context, MaterialPageRoute(builder: (_) => GridPhotoView()));
           });*/
-          return Image.file(snapshot.data);
-        } else {
-          return Text('No image. Weird.');
-        }
-      });
+            return Image.file(snapshot.data);
+          } else {
+            return Text('No image. Weird.');
+          }
+        });
     var chrome = Image.asset(
       'assets/brushed_metal.jpg',
       height: 100.0,
@@ -55,7 +55,7 @@ class GridPhotoView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-          body: Table(children: [
+      body: Table(children: [
         TableRow(children: [Text('hello there')]),
       ]),
     );
