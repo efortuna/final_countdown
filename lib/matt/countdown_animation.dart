@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:fx/fx.dart';
-
 import 'package:final_countdown/matt/text_duration.dart';
 import 'package:final_countdown/matt/flipper.dart';
 
