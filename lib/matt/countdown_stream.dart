@@ -7,7 +7,7 @@ Stream<Duration> _countdown(Duration duration,
     {Duration frequency = const Duration(seconds: 1)}) async* {
   var remaining = duration;
   while (remaining > const Duration()) {
-    remaining -= const Duration(seconds: 1);
+    remaining -= frequency;
     yield remaining;
     await Future.delayed(frequency);
   }
