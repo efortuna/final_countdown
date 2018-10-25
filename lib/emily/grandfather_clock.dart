@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'dart:math' as math;
 
 class Countdown extends StatelessWidget {
   Countdown({this.duration});
@@ -30,7 +31,14 @@ class Countdown extends StatelessWidget {
             children: <Widget>[
               Stack(
                 children: [
-                  Image.asset('assets/wood.jpg', height: 500.0, width: 410.0, fit: BoxFit.cover),
+                  Stack(
+                    children: <Widget>[
+                      Image.asset('assets/wood.jpg',
+                          height: 500.0, width: 410.0, fit: BoxFit.cover),
+                      Pendulum(),
+                    ],
+                    alignment: Alignment.topCenter,
+                  ),
                   ClipPath(
                     child: frostedGlass,
                     clipper: RightCurve(),
@@ -56,6 +64,76 @@ class FrostedLeftClip extends StatelessWidget {
     return ClipPath(
       child: theChild,
       clipper: LeftCurve(),
+    );
+  }
+}
+
+class Pendulum extends StatefulWidget {
+  @override
+  _PendulumState createState() => _PendulumState();
+}
+
+class _PendulumState extends State<Pendulum> with TickerProviderStateMixin {
+  AnimationController _animationController;
+
+  @override
+  initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(seconds: 1),
+      lowerBound: -.03,
+      upperBound: .03,
+      vsync: this,
+    )..forward();
+    _animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _animationController.reverse();
+      } else if (status == AnimationStatus.dismissed) {
+        _animationController.forward();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PivotTransition(
+        turns: _animationController,
+        child: Container(color: Colors.black, width: 20.0, height: 400.0));
+  }
+}
+
+/// Animates the rotation of a widget around a pivot point.
+class PivotTransition extends AnimatedWidget {
+  /// Creates a rotation transition.
+  ///
+  /// The [turns] argument must not be null.
+  PivotTransition({
+    Key key,
+    this.alignment: FractionalOffset.topCenter,
+    @required Animation<double> turns,
+    this.child,
+  }) : super(key: key, listenable: turns);
+
+  /// The animation that controls the rotation of the child.
+  ///
+  /// If the current value of the turns animation is v, the child will be
+  /// rotated v * 2 * pi radians before being painted.
+  Animation<double> get turns => listenable;
+
+  /// The pivot point to rotate around.
+  final FractionalOffset alignment;
+
+  /// The widget below this widget in the tree.
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final double turnsValue = turns.value;
+    final Matrix4 transform = new Matrix4.rotationZ(turnsValue * math.pi * 2.0);
+    return new Transform(
+      transform: transform,
+      alignment: alignment,
+      child: child,
     );
   }
 }
