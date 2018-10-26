@@ -3,14 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:final_countdown/matt/utils.dart';
 
+import 'package:final_countdown/matt/countdown_persistence.dart';
+
 Stream<Duration> _countdown(Duration duration,
     {Duration frequency = const Duration(seconds: 1)}) async* {
+  // Check the cache for a stored duration
+  duration = await loadDuration(duration);
+
   var remaining = duration;
   while (remaining > const Duration()) {
     remaining -= frequency;
     yield remaining;
     await Future.delayed(frequency);
+    // Save cache
+    saveDuration(remaining);
   }
+  // Wipe the cache
+  deleteDuration();
 }
 
 /// Holds the countdown state
