@@ -62,73 +62,72 @@ class StreamFlipClock extends StatelessWidget {
   StreamFlipClock(this.time);
   final FinalCountdown time;
   final _spacing = const EdgeInsets.symmetric(horizontal: 2.0);
-  final _digitSize = 48.0;
+  static final _digitSize = 96.0;
+  static final _panelHeight = _digitSize + 20;
+  static final _textStyle = TextStyle(
+      fontWeight: FontWeight.bold, fontSize: _digitSize, color: Colors.white);
   final _borderRadius = const BorderRadius.all(Radius.circular(3.0));
 
-  Container _buildDigit(context, digit) => Container(
-        alignment: Alignment.center,
-        width: 44.0,
-        height: 60.0,
+  Widget _buildDigit(Stream<int> streamSource, int startValue) {
+    return Padding(
+      padding: _spacing,
+      child: FlipPanel<int>.stream(
+        itemStream: streamSource,
+        initValue: startValue,
+        direction: FlipDirection.down,
+        itemBuilder: (context, digit) => Container(
+              alignment: Alignment.center,
+              width: _digitSize - 20,
+              height: _panelHeight,
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: _borderRadius,
+              ),
+              child: Text(
+                '$digit',
+                style: _textStyle,
+              ),
+            ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          // Minutes
+          _buildDigit(time.tensMinuteDigit, time.duration.inMinutes ~/ 10),
+          _buildDigit(time.onesMinuteDigit, time.duration.inMinutes % 10),
+
+          _buildSeparator(),
+
+          // Seconds
+          _buildDigit(
+              time.tensSecondDigit, (time.duration.inSeconds % 60) ~/ 10),
+          _buildDigit(
+              time.onesSecondDigit, (time.duration.inSeconds % 60) % 10),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSeparator() {
+    return Padding(
+      padding: _spacing,
+      child: Container(
         decoration: BoxDecoration(
           color: Colors.black,
           borderRadius: _borderRadius,
         ),
+        width: _digitSize / 4,
+        height: _panelHeight,
+        alignment: Alignment.center,
         child: Text(
-          '$digit',
-          style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: _digitSize,
-              color: Colors.white),
-        ),
-      );
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        // Minutes
-        FlipPanel<int>.stream(
-            itemStream: time.tensMinuteDigit,
-            itemBuilder: _buildDigit,
-            initValue: time.duration.inMinutes ~/ 10,
-            direction: FlipDirection.down),
-        FlipPanel<int>.stream(
-            itemStream: time.onesMinuteDigit,
-            itemBuilder: _buildDigit,
-            initValue: time.duration.inMinutes % 10,
-            direction: FlipDirection.down),
-
-        _buildSeparator(),
-
-        // Seconds
-        FlipPanel<int>.stream(
-            itemStream: time.tensSecondDigit,
-            itemBuilder: _buildDigit,
-            initValue: (time.duration.inSeconds % 60) ~/ 10,
-            direction: FlipDirection.down),
-        FlipPanel<int>.stream(
-            itemStream: time.onesSecondDigit,
-            itemBuilder: _buildDigit,
-            initValue: (time.duration.inSeconds % 60) % 10,
-            direction: FlipDirection.down),
-      ],
-    );
-  }
-
-  Container _buildSeparator() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: _borderRadius,
-      ),
-      width: 24.0,
-      height: 60.0,
-      alignment: Alignment.center,
-      child: Text(
-        ':',
-        style: TextStyle(
-          fontSize: _digitSize,
-          color: Colors.white,
+          ':',
+          style: _textStyle,
         ),
       ),
     );
