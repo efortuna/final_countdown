@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-//import 'package:final_countdown/matt/countdown_animation.dart';
 import 'package:final_countdown/retro_clock.dart';
-//import 'package:final_countdown/emily/grandfather_clock.dart';
-//import 'package:final_countdown/emily/photo_clock.dart';
-//import 'package:final_countdown/countdown_stream.dart';
+import 'package:final_countdown/photo_clock.dart';
+import 'package:final_countdown/countdown_stream.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  static final countdown = FinalCountdown(const Duration(minutes: 15));
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,9 +18,13 @@ class MyApp extends StatelessWidget {
       ),
       home: Scaffold(
           body: Center(
-              child: Countdown(
-        duration: const Duration(minutes: 15),
-      ))),
+              child: PageView(
+                children: <Widget>[
+                  SimpleClock(countdown),
+                  RetroClock(countdown),
+                  PhotoClock(countdown),
+                ],
+              ))),
     );
   }
 }

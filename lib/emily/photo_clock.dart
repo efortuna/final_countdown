@@ -69,14 +69,16 @@ class Picture extends StatefulWidget {
 }
 
 class _PictureState extends State<Picture> {
+  double size = 200;
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: FutureBuilder(future: Future.delayed(const Duration(seconds: 5), () => true),
+      child: FutureBuilder(future: Future.delayed(const Duration(seconds: 3), () => true),
       builder: (BuildContext context, AsyncSnapshot<bool> completed) {
         if (completed.hasData) {
-          return Hero(tag: 'hi', child: Image.asset('assets/wood.jpg', height: 20.0));
+          setState(() => size = 20.0);
         }
+        return AnimatedContainer(height: size, child: Image.asset('assets/wood.jpg'), duration: const Duration(seconds: 3));
         return Hero(tag: 'hi', child: Image.asset('assets/wood.jpg', height: 20.0));
         return Container(height: 20.0, color: Colors.red);
       })

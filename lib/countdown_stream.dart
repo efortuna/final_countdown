@@ -77,17 +77,16 @@ class CountdownProvider extends InheritedWidget {
   bool updateShouldNotify(InheritedWidget _) => false;
 }
 
-class Countdown extends StatelessWidget {
-  Countdown({this.duration});
-  final Duration duration;
+class SimpleClock extends StatelessWidget {
+  SimpleClock(this.countdown);
+  final FinalCountdown countdown;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Builder(
         builder: (context) => StreamBuilder(
-              stream: FinalCountdown(const Duration(
-                  minutes: 1)).time, //CountdownProvider.of(context).countdown,
+              stream: countdown.time, //CountdownProvider.of(context).countdown,
               builder: (context, AsyncSnapshot<Duration> snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:

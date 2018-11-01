@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flip_panel/flip_panel.dart';
 import 'package:final_countdown/countdown_stream.dart';
 
-class Countdown extends StatelessWidget {
-  Countdown({this.duration}) : time = FinalCountdown(duration);
-  final Duration duration;
+class RetroClock extends StatelessWidget {
+  RetroClock(this.time);
   final FinalCountdown time;
 
   @override
@@ -45,7 +44,8 @@ class StreamFlipClock extends StatelessWidget {
       padding: _spacing,
       child: FlipPanel<int>.stream(
         itemStream: streamSource,
-        initValue: startValue,
+        // TODO(efortuna): Get "startValue" from "preferences" somehow don't always show 15
+        initValue: startValue, 
         direction: FlipDirection.down,
         itemBuilder: (context, digit) => Container(
               alignment: Alignment.center,
