@@ -10,51 +10,23 @@ class Countdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var chrome = Image.asset(
-      'assets/brushed_metal.jpg',
-      height: 100.0,
-      width: 500.0,
-      repeat: ImageRepeat.repeatX,
-    );
+    var wood = Image.asset('assets/wood.jpg',
+        height: 100.0, width: 500.0, fit: BoxFit.cover);
     return Container(
-      color: Colors.grey[400],
+      color: Colors.black,
       child: Column(
         children: <Widget>[
-          chrome,
+          wood,
           Expanded(
-            child: StreamFlipClock(time),
-            /*child: FlipClock.countdown(
-              duration: duration,
-              digitColor: Colors.white,
-              backgroundColor: Colors.black,
-              digitSize: 48.0,
-              borderRadius: const BorderRadius.all(Radius.circular(3.0)),
-              onDone: () => print("Time's up!"),
-              flipDirection: FlipDirection.down,
-            ),*/
+            child: Card(
+              child: Card(color: Colors.grey[800], elevation: 4.0, margin: EdgeInsets.all(10.0), child: StreamFlipClock(time)),
+              elevation: 20.0,
+            ),
           ),
-          chrome,
+          wood,
         ],
       ),
     );
-
-    /*_separator = Container(
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: borderRadius,
-      ),
-      width: 24.0,
-      height: 60.0,
-      alignment: Alignment.center,
-      child: Text(
-        ':',
-        style: TextStyle(
-          fontSize: digitSize,
-          color: digitColor,
-        ),
-      ),
-    )
-    */
   }
 }
 
