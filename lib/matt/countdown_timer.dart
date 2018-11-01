@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'package:final_countdown/matt/utils.dart';
+import 'package:final_countdown/utils.dart';
 
 class Countdown extends StatefulWidget {
   Countdown({this.duration});

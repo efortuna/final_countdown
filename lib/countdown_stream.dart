@@ -1,25 +1,40 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:final_countdown/matt/utils.dart';
+import 'package:final_countdown/utils.dart';
 
-import 'package:final_countdown/matt/countdown_persistence.dart';
+import 'package:final_countdown/countdown_persistence.dart';
 
-Stream<Duration> _countdown(Duration duration,
-    {Duration frequency = const Duration(seconds: 1)}) async* {
-  // Check the cache for a stored duration
-  duration = await loadDuration(duration);
+/// Utility class that provides access to the time stream and also converts the
+/// time stream separate streams of the individual digits.
+class FinalCountdown {
+  FinalCountdown(this.duration,
+      {Duration frequency = const Duration(seconds: 1)})
+      : time = _countdown(duration, frequency: frequency).asBroadcastStream();
+  final Stream<Duration> time;
+  final Duration duration;
 
-  var remaining = duration;
-  while (remaining > const Duration()) {
-    remaining -= frequency;
-    yield remaining;
-    await Future.delayed(frequency);
-    // Save cache
-    saveDuration(remaining);
+  Stream<int> get tensMinuteDigit => time.map<int>((Duration d) => d.inMinutes ~/ 10);
+  Stream<int> get onesMinuteDigit => time.map<int>((Duration d) => d.inMinutes % 10);
+  Stream<int> get tensSecondDigit => time.map<int>((Duration d) => (d.inSeconds % 60) ~/ 10);
+  Stream<int> get onesSecondDigit => time.map<int>((Duration d) => (d.inSeconds% 60) % 10);
+
+  static Stream<Duration> _countdown(Duration duration,
+      {Duration frequency = const Duration(seconds: 1)}) async* {
+    // Check the cache for a stored duration
+    duration = await loadDuration(duration);
+
+    var remaining = duration;
+    while (remaining > const Duration()) {
+      remaining -= frequency;
+      yield remaining;
+      await Future.delayed(frequency);
+      // Save cache
+      saveDuration(remaining);
+    }
+    // Wipe the cache
+    deleteDuration();
   }
-  // Wipe the cache
-  deleteDuration();
 }
 
 /// Holds the countdown state
@@ -31,7 +46,7 @@ class CountdownTimer {
   Stream<Duration> get countdown => stream ?? resetCountDown;
 
   Stream<Duration> get resetCountDown {
-    stream = _countdown(duration, frequency: frequency);
+    stream = FinalCountdown(duration, frequency: frequency).time;
     return stream;
   }
 }
@@ -71,8 +86,8 @@ class Countdown extends StatelessWidget {
     return Center(
       child: Builder(
         builder: (context) => StreamBuilder(
-              stream: _countdown(const Duration(
-                  minutes: 1)), //CountdownProvider.of(context).countdown,
+              stream: FinalCountdown(const Duration(
+                  minutes: 1)).time, //CountdownProvider.of(context).countdown,
               builder: (context, AsyncSnapshot<Duration> snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:

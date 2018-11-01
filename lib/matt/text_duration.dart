@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import 'package:final_countdown/matt/utils.dart';
+import 'package:final_countdown/utils.dart';
 
 class TextDuration extends StatelessWidget {
   TextDuration({this.duration});
