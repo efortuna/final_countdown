@@ -1,6 +1,5 @@
 // Inspired by: https://medium.com/flutter-community/make-3d-flip-animation-in-flutter-16c006bb3798
 import 'package:flutter/material.dart';
-import 'package:flip_panel/flip_panel.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:async';

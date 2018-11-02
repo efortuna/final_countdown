@@ -16,16 +16,18 @@ class PhotoClock extends StatelessWidget {
 }
 
 class GridPhotoView extends StatelessWidget {
-  GridPhotoView(this.countdown);
-  final FinalCountdown
-      countdown; // TODO(efortuna): Make accessible via inherited widget?
+  GridPhotoView(this.countdown) : photos = List<Picture>.generate(16, (i) => Picture(countdown));
+  // TODO(efortuna): Make accessible via inherited widget?
+  final FinalCountdown countdown; 
+  final List<Picture> photos;
+  final photosPerRow = 4;
+
   @override
   Widget build(BuildContext context) {
     var rows = List<TableRow>.generate(
-        4,
+        photosPerRow,
         (int i) => TableRow(
-            children:
-                List<Picture>.generate(4, (int j) => Picture(countdown))));
+            children: photos.sublist(i * photosPerRow, i * photosPerRow + photosPerRow)));
     return Table(children: rows);
   }
 }
@@ -65,7 +67,16 @@ class _PictureState extends State<Picture> {
       var frontCamera = cameraOptions.firstWhere((description) =>
           description.lensDirection == CameraLensDirection.front);
       _controller = CameraController(frontCamera, ResolutionPreset.low);
+      _controller.addListener(() {
+      if (mounted) setState(() {});
+      if (_controller.value.hasError) {
+        print('Camera error ${_controller.value.errorDescription}');
+      }
+    });
       await _controller.initialize();
+      if (mounted) {
+      setState(() {});
+    }
     } on StateError catch (e) {
       print('No front-facing camera found: $e');
     }
