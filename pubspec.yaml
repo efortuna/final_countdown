@@ -28,5 +28,6 @@ flutter:
 
   assets: 
     - assets/brushed_metal.jpg
+    - assets/beaker_by_david_goehring.jpg
     - assets/wood.jpg
     - assets/wood_planks.jpg
