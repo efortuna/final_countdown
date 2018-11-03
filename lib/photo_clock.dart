@@ -142,7 +142,10 @@ class _PictureState extends State<Picture> {
             case ConnectionState.waiting:
               return Text('Waiting ...');
             case ConnectionState.active:
-              return Text('Time ${prettyPrintDuration(snapshot.data)}');
+              return Center(
+                  child: Text('${prettyPrintDuration(snapshot.data)}',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 32.0)));
             case ConnectionState.done:
               return Text('Time\s up!');
             case ConnectionState.none:
