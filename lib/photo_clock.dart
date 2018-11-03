@@ -16,9 +16,10 @@ class PhotoClock extends StatelessWidget {
 }
 
 class GridPhotoView extends StatelessWidget {
-  GridPhotoView(this.countdown) : photos = List<Picture>.generate(16, (i) => Picture(countdown, i));
+  GridPhotoView(this.countdown)
+      : photos = List<Picture>.generate(16, (i) => Picture(countdown, i));
   // TODO(efortuna): Make accessible via inherited widget?
-  final FinalCountdown countdown; 
+  final FinalCountdown countdown;
   final List<Picture> photos;
   final photosPerRow = 4;
 
@@ -27,15 +28,23 @@ class GridPhotoView extends StatelessWidget {
     var rows = List<TableRow>.generate(
         photosPerRow,
         (int i) => TableRow(
-            children: photos.sublist(i * photosPerRow, i * photosPerRow + photosPerRow)));
-    return Center(child: Table(children: rows));
+            children: photos.sublist(
+                i * photosPerRow, i * photosPerRow + photosPerRow)));
+    return Column(
+      children: <Widget>[
+        Image.asset('assets/camera_top.png'),
+        Card(child: Table(children: rows)),
+        Image.asset('assets/camera_bottom.png'),
+      ],
+    );
   }
 }
 
 class Picture extends StatefulWidget {
   Picture(this.countdown, this.index);
   final FinalCountdown countdown;
-  /// Indicator of what number this picture is, important 
+
+  /// Indicator of what number this picture is, important
   /// to know when it should take a picture.
   final index;
   @override
@@ -48,7 +57,9 @@ class _PictureState extends State<Picture> {
   StreamSubscription _colorUpdates;
   CameraController _controller;
   bool _setPicture;
-  // TODO(efortuna): add a TIME's UP for the last square.
+  // TODO(efortuna): make the photos discoverable. Make the
+  // filename particular to the DURATION point it was taken,and then
+  // have some unique id for when it is first run. (perhaps address of Countdown obj?)
 
   @override
   initState() {
@@ -64,13 +75,15 @@ class _PictureState extends State<Picture> {
             newDuration.inMinutes / widget.countdown.duration.inMinutes);
       });
       int nthImage = widget.countdown.duration.inMinutes - widget.index;
-      if (newDuration.inSeconds % 60 == 0 && newDuration.inMinutes == nthImage) {
+      if (newDuration.inSeconds % 60 == 0 &&
+          newDuration.inMinutes == nthImage) {
+        _setPicture = true;
         var filename = await takePicture();
         setState(() => _image = Image.file(File(filename), fit: BoxFit.cover));
-        _setPicture = true;
-      }
-      if (!_setPicture && newDuration.inMinutes < nthImage) {
-        setState(() => _image = Image.asset('assets/beaker_by_david_goehring.jpg', fit: BoxFit.cover));
+      } else if (!_setPicture && newDuration.inMinutes < nthImage) {
+        setState(() => _image = Image.asset(
+            'assets/beaker_by_david_goehring.jpg',
+            fit: BoxFit.cover));
         _setPicture = true;
       }
     });
@@ -82,16 +95,7 @@ class _PictureState extends State<Picture> {
       var frontCamera = cameraOptions.firstWhere((description) =>
           description.lensDirection == CameraLensDirection.front);
       _controller = CameraController(frontCamera, ResolutionPreset.low);
-      /*_controller.addListener(() {
-      if (mounted) setState(() {});
-      if (_controller.value.hasError) {
-        print('Camera error ${_controller.value.errorDescription}');
-      }
-    });*/
       await _controller.initialize();
-      /*if (mounted) {
-      setState(() {});
-    }*/
     } on StateError catch (e) {
       print('No front-facing camera found: $e');
     }
