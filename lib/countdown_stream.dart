@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'package:final_countdown/countdown_persistence.dart';
 
@@ -40,38 +41,46 @@ class FinalCountdown {
   }
 }
 
-/// Holds the countdown state
-class CountdownTimer {
-  CountdownTimer(this.duration, {this.frequency = const Duration(seconds: 1)});
-  final Duration duration, frequency;
-  Stream<Duration> stream;
-
-  Stream<Duration> get countdown => stream ?? resetCountDown;
-
-  Stream<Duration> get resetCountDown {
-    stream = FinalCountdown(duration, frequency: frequency).time;
-    return stream;
-  }
-}
-
 /// Use to maintain state between hot reloads
 /// Make sure you wrap this above the MaterialApp widget
 /// or hot reload will affect it
 class CountdownProvider extends InheritedWidget {
   CountdownProvider({
     Key key,
-    Widget child,
-    this.duration,
+    @required Widget child,
+    @required this.duration,
     this.frequency = const Duration(seconds: 1),
   })  : assert(child != null),
         assert(duration != null),
-        countdownTimer = CountdownTimer(duration, frequency: frequency),
-        super(key: key, child: child);
+        countdown = FinalCountdown(duration, frequency: frequency),
+        super(key: key, child: child) {
+    countdown.time.listen((d) => _subject.add(d));
+    countdown.tensMinuteDigit.listen((i) => _tensMinuteDigitSubject.add(i));
+    countdown.onesMinuteDigit.listen((i) => _onesMinuteDigitSubject.add(i));
+    countdown.tensSecondDigit.listen((i) => _tensSecondDigitSubject.add(i));
+    countdown.onesSecondDigit.listen((i) => _onesSecondDigitSubject.add(i));
+  }
 
   final Duration duration, frequency;
-  final CountdownTimer countdownTimer;
+  final FinalCountdown countdown;
 
-  Stream<Duration> get countdown => countdownTimer.countdown;
+  final _subject = BehaviorSubject<Duration>();
+  final _tensMinuteDigitSubject = BehaviorSubject<int>();
+  final _onesMinuteDigitSubject = BehaviorSubject<int>();
+  final _tensSecondDigitSubject = BehaviorSubject<int>();
+  final _onesSecondDigitSubject = BehaviorSubject<int>();
+
+  get stream => _subject.stream;
+
+  get tensMinuteDigitStream => _tensMinuteDigitSubject.stream;
+  get onesMinuteDigitStream => _onesMinuteDigitSubject.stream;
+  get tensSecondDigitStream => _tensSecondDigitSubject.stream;
+  get onesSecondDigitStream => _onesSecondDigitSubject.stream;
+
+  get tensMinuteDigit => _tensMinuteDigitSubject.value;
+  get onesMinuteDigit => _onesMinuteDigitSubject.value;
+  get tensSecondDigit => _tensSecondDigitSubject.value;
+  get onesSecondDigit => _tensSecondDigitSubject.value;
 
   static CountdownProvider of(BuildContext context) =>
       context.inheritFromWidgetOfExactType(CountdownProvider);

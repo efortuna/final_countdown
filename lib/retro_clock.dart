@@ -18,7 +18,12 @@ class RetroClock extends StatelessWidget {
           wood,
           Expanded(
             child: Card(
-              child: Card(color: Colors.grey[800], elevation: 4.0, margin: EdgeInsets.all(10.0), child: StreamFlipClock(time)),
+              child: Card(
+                color: Colors.grey[800],
+                elevation: 4.0,
+                margin: EdgeInsets.all(10.0),
+                child: StreamFlipClock(time),
+              ),
               elevation: 20.0,
             ),
           ),
@@ -45,7 +50,7 @@ class StreamFlipClock extends StatelessWidget {
       child: FlipPanel<int>.stream(
         itemStream: streamSource,
         // TODO(efortuna): Get "startValue" from "preferences" somehow don't always show 15
-        initValue: startValue, 
+        initValue: startValue,
         direction: FlipDirection.down,
         itemBuilder: (context, digit) => Container(
               alignment: Alignment.center,
@@ -66,21 +71,24 @@ class StreamFlipClock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final countdown = CountdownProvider.of(context);
     return Center(
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           // Minutes
-          _buildDigit(time.tensMinuteDigit, time.duration.inMinutes ~/ 10),
-          _buildDigit(time.onesMinuteDigit, time.duration.inMinutes % 10),
+          _buildDigit(
+              countdown.tensMinuteDigitStream, countdown.tensMinuteDigit),
+          _buildDigit(
+              countdown.onesMinuteDigitStream, countdown.onesMinuteDigit),
 
           _buildSeparator(),
 
           // Seconds
           _buildDigit(
-              time.tensSecondDigit, (time.duration.inSeconds % 60) ~/ 10),
+              countdown.tensSecondDigitStream, countdown.tensSecondDigit),
           _buildDigit(
-              time.onesSecondDigit, (time.duration.inSeconds % 60) % 10),
+              countdown.onesSecondDigitStream, countdown.onesSecondDigit),
         ],
       ),
     );

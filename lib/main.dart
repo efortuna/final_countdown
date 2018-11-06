@@ -18,14 +18,17 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
-          body: Center(
-              child: PageView(
-        children: <Widget>[
-          SimpleClock(countdown),
-          RetroClock(countdown),
-          PhotoClock(countdown),
-        ],
-      ))),
+          body: CountdownProvider(
+        duration: const Duration(minutes: 15),
+        child: Center(
+            child: PageView(
+          children: <Widget>[
+            SimpleClock(countdown),
+            RetroClock(countdown),
+            PhotoClock(countdown),
+          ],
+        )),
+      )),
     );
   }
 }
