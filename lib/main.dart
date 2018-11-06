@@ -23,9 +23,9 @@ class MyApp extends StatelessWidget {
         child: Center(
             child: PageView(
           children: <Widget>[
-            SimpleClock(countdown),
-            RetroClock(countdown),
-            PhotoClock(countdown),
+            SimpleClock(),
+            RetroClock(),
+            PhotoClock(),
           ],
         )),
       )),

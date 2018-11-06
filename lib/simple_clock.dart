@@ -3,8 +3,7 @@ import 'package:final_countdown/countdown_stream.dart';
 import 'package:final_countdown/utils.dart';
 
 class SimpleClock extends StatelessWidget {
-  SimpleClock(this.countdown);
-  final FinalCountdown countdown;
+  SimpleClock();
 
   @override
   Widget build(BuildContext context) {

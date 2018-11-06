@@ -4,9 +4,6 @@ import 'package:flip_panel/flip_panel.dart';
 import 'package:final_countdown/countdown_stream.dart';
 
 class RetroClock extends StatelessWidget {
-  RetroClock(this.time);
-  final FinalCountdown time;
-
   @override
   Widget build(BuildContext context) {
     var wood = Image.asset('assets/wood.jpg',
@@ -22,7 +19,7 @@ class RetroClock extends StatelessWidget {
                 color: Colors.grey[800],
                 elevation: 4.0,
                 margin: EdgeInsets.all(10.0),
-                child: StreamFlipClock(time),
+                child: StreamFlipClock(),
               ),
               elevation: 20.0,
             ),
@@ -35,8 +32,8 @@ class RetroClock extends StatelessWidget {
 }
 
 class StreamFlipClock extends StatelessWidget {
-  StreamFlipClock(this.time);
-  final FinalCountdown time;
+  StreamFlipClock();
+
   final _spacing = const EdgeInsets.symmetric(horizontal: 2.0);
   static final _digitSize = 96.0;
   static final _panelHeight = _digitSize + 20;

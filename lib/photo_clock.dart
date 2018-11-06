@@ -7,24 +7,20 @@ import 'dart:async';
 import 'dart:io';
 
 class PhotoClock extends StatelessWidget {
-  PhotoClock(this.countdown);
-  final FinalCountdown countdown;
   @override
   Widget build(BuildContext context) {
-    return GridPhotoView(countdown);
+    return GridPhotoView();
   }
 }
 
 class GridPhotoView extends StatelessWidget {
-  GridPhotoView(this.countdown)
-      : photos = List<Picture>.generate(16, (i) => Picture(countdown, i));
-  // TODO(efortuna): Make accessible via inherited widget?
-  final FinalCountdown countdown;
-  final List<Picture> photos;
   final photosPerRow = 4;
 
   @override
   Widget build(BuildContext context) {
+    final countdown = CountdownProvider.of(context);
+    final photos = List<Picture>.generate(16, (i) => Picture(countdown, i));
+
     var rows = List<TableRow>.generate(
         photosPerRow,
         (int i) => TableRow(
@@ -42,13 +38,13 @@ class GridPhotoView extends StatelessWidget {
 
 class Picture extends StatefulWidget {
   Picture(this.countdown, this.index);
-  final FinalCountdown countdown;
+  final CountdownProvider countdown;
 
   /// Indicator of what number this picture is, important
   /// to know when it should take a picture.
   final index;
   @override
-  _PictureState createState() => _PictureState();
+  createState() => _PictureState();
 }
 
 class _PictureState extends State<Picture> {
@@ -68,7 +64,8 @@ class _PictureState extends State<Picture> {
     _image = makeClock();
     _color = Colors.yellow;
     // TODO(efortuna): I feel like there should be a better way to do this.
-    _colorUpdates = widget.countdown.time.listen((Duration newDuration) async {
+    _colorUpdates =
+        widget.countdown.stream.listen((Duration newDuration) async {
       // Normalize rating to (0,1) and interpolate color from yellow to red as we run out of time
       setState(() {
         _color = Color.lerp(Colors.red, Colors.yellow,
@@ -136,7 +133,7 @@ class _PictureState extends State<Picture> {
   }
 
   makeClock() => StreamBuilder(
-        stream: widget.countdown.time,
+        stream: widget.countdown.stream,
         builder: (context, AsyncSnapshot<Duration> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
