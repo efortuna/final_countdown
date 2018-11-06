@@ -54,11 +54,11 @@ class CountdownProvider extends InheritedWidget {
         assert(duration != null),
         countdown = FinalCountdown(duration, frequency: frequency),
         super(key: key, child: child) {
-    countdown.time.listen((d) => _subject.add(d));
-    countdown.tensMinuteDigit.listen((i) => _tensMinuteDigitSubject.add(i));
-    countdown.onesMinuteDigit.listen((i) => _onesMinuteDigitSubject.add(i));
-    countdown.tensSecondDigit.listen((i) => _tensSecondDigitSubject.add(i));
-    countdown.onesSecondDigit.listen((i) => _onesSecondDigitSubject.add(i));
+    _subject.addStream(countdown.time);
+    _tensMinuteDigitSubject.addStream(countdown.tensMinuteDigit);
+    _onesMinuteDigitSubject.addStream(countdown.onesMinuteDigit);
+    _tensSecondDigitSubject.addStream(countdown.tensSecondDigit);
+    _onesSecondDigitSubject.addStream(countdown.onesSecondDigit);
   }
 
   final Duration duration, frequency;
