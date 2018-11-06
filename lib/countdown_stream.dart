@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:final_countdown/utils.dart';
 
 import 'package:final_countdown/countdown_persistence.dart';
 
@@ -14,10 +13,14 @@ class FinalCountdown {
   final Stream<Duration> time;
   final Duration duration;
 
-  Stream<int> get tensMinuteDigit => time.map<int>((Duration d) => d.inMinutes ~/ 10);
-  Stream<int> get onesMinuteDigit => time.map<int>((Duration d) => d.inMinutes % 10);
-  Stream<int> get tensSecondDigit => time.map<int>((Duration d) => (d.inSeconds % 60) ~/ 10);
-  Stream<int> get onesSecondDigit => time.map<int>((Duration d) => (d.inSeconds% 60) % 10);
+  Stream<int> get tensMinuteDigit =>
+      time.map<int>((Duration d) => d.inMinutes ~/ 10);
+  Stream<int> get onesMinuteDigit =>
+      time.map<int>((Duration d) => d.inMinutes % 10);
+  Stream<int> get tensSecondDigit =>
+      time.map<int>((Duration d) => (d.inSeconds % 60) ~/ 10);
+  Stream<int> get onesSecondDigit =>
+      time.map<int>((Duration d) => (d.inSeconds % 60) % 10);
 
   static Stream<Duration> _countdown(Duration duration,
       {Duration frequency = const Duration(seconds: 1)}) async* {
@@ -75,33 +78,4 @@ class CountdownProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(InheritedWidget _) => false;
-}
-
-class SimpleClock extends StatelessWidget {
-  SimpleClock(this.countdown);
-  final FinalCountdown countdown;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Builder(
-        builder: (context) => StreamBuilder(
-              stream: countdown.time, //CountdownProvider.of(context).countdown,
-              builder: (context, AsyncSnapshot<Duration> snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                    return Text('Waiting ...');
-                  case ConnectionState.active:
-                    return Text('Time ${prettyPrintDuration(snapshot.data)}');
-                  case ConnectionState.done:
-                    return Text('Time\s up!');
-                  case ConnectionState.none:
-                    return Text(
-                        'Entered oblivion; this should never have happened');
-                }
-              },
-            ),
-      ),
-    );
-  }
 }

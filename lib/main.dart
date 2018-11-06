@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:final_countdown/simple_clock.dart';
 import 'package:final_countdown/retro_clock.dart';
 import 'package:final_countdown/photo_clock.dart';
 import 'package:final_countdown/countdown_stream.dart';
@@ -19,12 +20,12 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
           body: Center(
               child: PageView(
-                children: <Widget>[
-                  SimpleClock(countdown),
-                  RetroClock(countdown),
-                  PhotoClock(countdown),
-                ],
-              ))),
+        children: <Widget>[
+          SimpleClock(countdown),
+          RetroClock(countdown),
+          PhotoClock(countdown),
+        ],
+      ))),
     );
   }
 }

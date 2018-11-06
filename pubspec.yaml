@@ -10,8 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  camera: #^0.2.4
-    path: /Users/efortuna/github/plugins/packages/camera
+  camera: ^0.2.4
+    # path: /Users/efortuna/github/plugins/packages/camera
   cupertino_icons: ^0.1.2
   fx: ^0.0.1
   flip_panel: ^0.0.8
