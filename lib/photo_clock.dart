@@ -84,7 +84,8 @@ class _PictureState extends State<Picture> {
       if (newDuration.inSeconds % 60 < 10 && newDuration.inMinutes == nthImage) {
         _color = _flipRed? Colors.red : Colors.yellow;
         _flipRed = !_flipRed;
-      } else if (newDuration.inSeconds % 60 == 0 &&
+      }
+      if (newDuration.inSeconds % 60 == 0 &&
           newDuration.inMinutes == nthImage) {
         _setPicture = true;
         var filename = await takePicture();
