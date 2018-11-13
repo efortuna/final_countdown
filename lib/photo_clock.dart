@@ -60,6 +60,7 @@ class _PictureState extends State<Picture> {
   StreamSubscription _colorUpdates;
   CameraController _controller;
   bool _setPicture;
+  bool _flipRed;
   // TODO(efortuna): make the photos discoverable. Make the
   // filename particular to the DURATION point it was taken,and then
   // have some unique id for when it is first run. (perhaps address of Countdown obj?)
@@ -68,6 +69,7 @@ class _PictureState extends State<Picture> {
   initState() {
     super.initState();
     _setPicture = false;
+    _flipRed = true;
     _image = makeClock();
     _color = Colors.yellow;
     // TODO(efortuna): I feel like there should be a better way to do this.
@@ -79,7 +81,10 @@ class _PictureState extends State<Picture> {
             newDuration.inMinutes / widget.countdown.duration.inMinutes);
       });
       int nthImage = widget.countdown.duration.inMinutes - widget.index;
-      if (newDuration.inSeconds % 60 == 0 &&
+      if (newDuration.inSeconds % 60 < 10 && newDuration.inMinutes == nthImage) {
+        _color = _flipRed? Colors.red : Colors.yellow;
+        _flipRed = !_flipRed;
+      } else if (newDuration.inSeconds % 60 == 0 &&
           newDuration.inMinutes == nthImage) {
         _setPicture = true;
         var filename = await takePicture();
