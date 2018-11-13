@@ -27,11 +27,18 @@ class GridPhotoView extends StatelessWidget {
             children: photos.sublist(
                 i * photosPerRow, i * photosPerRow + photosPerRow)));
     return Column(
-      children: <Widget>[
-        Image.asset('assets/camera_top.png'),
-        Card(child: Table(children: rows)),
-        Image.asset('assets/camera_bottom.png'),
-      ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Image.asset('assets/camera_top.png'),
+          Container(
+            color: Colors.black,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Table(children: rows),
+            ),
+          ),
+          Image.asset('assets/camera_bottom.png'),
+        ],
     );
   }
 }
