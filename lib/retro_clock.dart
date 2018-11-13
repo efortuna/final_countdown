@@ -7,12 +7,36 @@ class RetroClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var wood = Image.asset('assets/wood.jpg',
-        height: 100.0, width: 500.0, fit: BoxFit.cover);
+        height: 200.0, width: 500.0, fit: BoxFit.cover);
     return Container(
       color: Colors.black,
       child: Column(
         children: <Widget>[
-          wood,
+          Stack(
+            children: <Widget>[
+              wood,
+              Container(
+      width: 100.0,
+      height: 100.0,
+      child: new RawMaterialButton(
+        fillColor: Colors.black,
+        shape: CircleBorder(),
+        elevation: 0.0,
+        child: Text('hello'),
+      onPressed: (){},
+  ),),
+              Padding(
+                padding: const EdgeInsets.all(100.0),
+                child: FloatingActionButton(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  child: Text('press me'),
+                  onPressed: () => print('hi'),
+                  //elevation: 5.0,
+                ),
+              ),
+            ],
+          ),
           Expanded(
             child: Card(
               child: Card(
@@ -24,8 +48,46 @@ class RetroClock extends StatelessWidget {
               elevation: 20.0,
             ),
           ),
-          wood,
+          Stack(
+            children: <Widget>[
+              wood,
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(30)),
+                    child: Container(
+                      color: Colors.transparent,
+                      height: 150,
+                      child: Column(
+                        children: <Widget>[
+                          Speaker(),
+                          Speaker(),
+                          Speaker(),
+                          Speaker(),
+                          Speaker(),
+                          Speaker(),
+                          Speaker(),
+                          Speaker(),
+                        ],
+                      ),
+                    )),
+              )
+            ],
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class Speaker extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Container(
+        color: Colors.black54,
+        height: 10,
       ),
     );
   }

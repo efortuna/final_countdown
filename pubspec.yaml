@@ -31,5 +31,9 @@ flutter:
     - assets/beaker_by_david_goehring.jpg
     - assets/camera_top.png
     - assets/camera_bottom.png
+    - assets/radio_dial.png
+    - assets/radio_dial2.png
+    - assets/speaker.png
+    - assets/radio_dial_long.png
     - assets/wood.jpg
     - assets/wood_planks.jpg
