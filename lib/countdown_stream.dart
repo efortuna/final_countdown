@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
+import 'dart:io';
 
 import 'package:final_countdown/countdown_persistence.dart';
 
@@ -41,7 +42,7 @@ class FinalCountdown {
   }
 }
 
-/// Use to maintain state between hot reloads
+/// Use to maintain state between hot restarts
 /// Make sure you wrap this above the MaterialApp widget
 /// or hot reload will affect it
 class CountdownProvider extends InheritedWidget {
@@ -53,6 +54,7 @@ class CountdownProvider extends InheritedWidget {
   })  : assert(child != null),
         assert(duration != null),
         countdown = FinalCountdown(duration, frequency: frequency),
+        storage = PhotoDirectory(),
         super(key: key, child: child) {
     _subject.addStream(countdown.time);
     _tensMinuteDigitSubject.addStream(countdown.tensMinuteDigit);
@@ -63,6 +65,7 @@ class CountdownProvider extends InheritedWidget {
 
   final Duration duration, frequency;
   final FinalCountdown countdown;
+  final PhotoDirectory storage;
 
   final _subject = BehaviorSubject<Duration>();
   final _tensMinuteDigitSubject = BehaviorSubject<int>();
@@ -71,6 +74,7 @@ class CountdownProvider extends InheritedWidget {
   final _onesSecondDigitSubject = BehaviorSubject<int>();
 
   get stream => _subject.stream;
+  get mostRecentTime => _subject.value;
 
   get tensMinuteDigitStream => _tensMinuteDigitSubject.stream;
   get onesMinuteDigitStream => _onesMinuteDigitSubject.stream;
@@ -87,4 +91,17 @@ class CountdownProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(InheritedWidget _) => false;
+}
+
+// Accessor to a temporary directory where photos are stored, so that the photos are 
+// persistent across hot restarts, from countdown to countdown.
+class PhotoDirectory {
+  PhotoDirectory() {
+    initializeDirectory();
+  }
+
+  initializeDirectory() async {
+    path = (await loadStorage()).path;
+  }
+  String path;
 }

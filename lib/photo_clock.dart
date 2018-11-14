@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:final_countdown/countdown_stream.dart';
 import 'package:final_countdown/utils.dart';
 import 'package:camera/camera.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -27,18 +26,18 @@ class GridPhotoView extends StatelessWidget {
             children: photos.sublist(
                 i * photosPerRow, i * photosPerRow + photosPerRow)));
     return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Image.asset('assets/camera_top.png'),
-          Container(
-            color: Colors.black,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Table(children: rows),
-            ),
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Image.asset('assets/camera_top.png'),
+        Container(
+          color: Colors.black,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Table(children: rows),
           ),
-          Image.asset('assets/camera_bottom.png'),
-        ],
+        ),
+        Image.asset('assets/camera_bottom.png'),
+      ],
     );
   }
 }
@@ -59,42 +58,47 @@ class _PictureState extends State<Picture> {
   Color _color;
   StreamSubscription _colorUpdates;
   CameraController _controller;
-  bool _setPicture;
   bool _flipRed;
-  // TODO(efortuna): make the photos discoverable. Make the
-  // filename particular to the DURATION point it was taken,and then
-  // have some unique id for when it is first run. (perhaps address of Countdown obj?)
+  String _filePath;
 
   @override
   initState() {
     super.initState();
-    _setPicture = false;
+    // Search for existing picture.
+    _filePath = '${widget.countdown.storage.path}/picture${widget.index}.jpg';
     _flipRed = true;
     _image = makeClock();
+    
     _color = Colors.yellow;
+
+    // Reversing the index so that we start at the top left instead of the bottom right.
+    int index = widget.countdown.duration.inMinutes - widget.index;
+    if (widget.countdown.mostRecentTime.inMinutes < index) {
+      try {
+      _image = Image.file(File(_filePath), fit: BoxFit.cover);
+      } catch (FileSystemException) {
+        // Currently swallow the exception if we can't find that image. 
+        // TODO(efortuna): do something better.
+      }
+    }
+
     // TODO(efortuna): I feel like there should be a better way to do this.
     _colorUpdates =
         widget.countdown.stream.listen((Duration newDuration) async {
       // Normalize rating to (0,1) and interpolate color from yellow to red as we run out of time
-      setState(() {
-        _color = Color.lerp(Colors.red, Colors.yellow,
-            newDuration.inMinutes / widget.countdown.duration.inMinutes);
-      });
-      int nthImage = widget.countdown.duration.inMinutes - widget.index;
-      if (newDuration.inSeconds % 60 < 10 && newDuration.inMinutes == nthImage) {
-        _color = _flipRed? Colors.red : Colors.yellow;
+      var calculatedColor = Color.lerp(Colors.red, Colors.yellow,
+          newDuration.inMinutes / widget.countdown.duration.inMinutes);
+      if (newDuration.inMinutes == index && newDuration.inSeconds % 60 < 10) {
+        // Create "flashing" effect in the last 10 seconds before taking a picture.
+        calculatedColor = _flipRed ? Colors.red : Colors.yellow;
         _flipRed = !_flipRed;
       }
-      if (newDuration.inSeconds % 60 == 0 &&
-          newDuration.inMinutes == nthImage) {
-        _setPicture = true;
-        var filename = await takePicture();
-        setState(() => _image = Image.file(File(filename), fit: BoxFit.cover));
-      } else if (!_setPicture && newDuration.inMinutes < nthImage) {
-        setState(() => _image = Image.asset(
-            'assets/beaker_by_david_goehring.jpg',
-            fit: BoxFit.cover));
-        _setPicture = true;
+      setState(() {
+        _color = calculatedColor;
+      });
+      if (newDuration.inMinutes == index && newDuration.inSeconds % 60 == 0) {
+        await takePicture();
+        setState(() => _image = Image.file(File(_filePath), fit: BoxFit.cover));
       }
     });
   }
@@ -111,20 +115,15 @@ class _PictureState extends State<Picture> {
     }
   }
 
-  Future<String> takePicture() async {
+  Future<bool> takePicture() async {
     await initializeCamera();
-    Directory extDir = await getApplicationDocumentsDirectory();
-    var dirPath = '${extDir.path}/Pictures/clock_app';
-    await Directory(dirPath).create(recursive: true);
-    var filePath = '$dirPath/${DateTime.now().millisecondsSinceEpoch}.jpg';
-
     try {
-      await _controller.takePicture(filePath);
+      await _controller.takePicture(_filePath);
     } on CameraException catch (e) {
       print('There was a problem taking the picture. $e');
-      return null;
+      return false;
     }
-    return filePath;
+    return true;
   }
 
   @override
