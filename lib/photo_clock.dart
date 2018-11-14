@@ -27,18 +27,18 @@ class GridPhotoView extends StatelessWidget {
             children: photos.sublist(
                 i * photosPerRow, i * photosPerRow + photosPerRow)));
     return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Image.asset('assets/camera_top.png'),
-          Container(
-            color: Colors.black,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Table(children: rows),
-            ),
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Image.asset('assets/camera_top.png'),
+        Container(
+          color: Colors.black,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Table(children: rows),
           ),
-          Image.asset('assets/camera_bottom.png'),
-        ],
+        ),
+        Image.asset('assets/camera_bottom.png'),
+      ],
     );
   }
 }
@@ -83,7 +83,12 @@ class _PictureState extends State<Picture> {
           newDuration.inMinutes == nthImage) {
         _setPicture = true;
         var filename = await takePicture();
-        setState(() => _image = Image.file(File(filename), fit: BoxFit.cover));
+        var countdownColor = Color.lerp(Colors.red, Colors.yellow,
+            newDuration.inMinutes / widget.countdown.duration.inMinutes);
+        setState(() => _image = Stack(fit: StackFit.expand, children: [
+              Image.file(File(filename), fit: BoxFit.cover),
+              Opacity(opacity: .5, child: Container(color: countdownColor))
+            ]));
       } else if (!_setPicture && newDuration.inMinutes < nthImage) {
         setState(() => _image = Image.asset(
             'assets/beaker_by_david_goehring.jpg',
