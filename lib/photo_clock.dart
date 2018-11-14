@@ -13,12 +13,12 @@ class PhotoClock extends StatelessWidget {
 }
 
 class GridPhotoView extends StatelessWidget {
-  final photosPerRow = 3;
+  final photosPerRow = 4;
 
   @override
   Widget build(BuildContext context) {
     final countdown = CountdownProvider.of(context);
-    final photos = List<Picture>.generate(9, (i) => Picture(countdown, i));
+    final photos = List<Picture>.generate(16, (i) => Picture(countdown, i));
 
     var rows = List<TableRow>.generate(
         photosPerRow,
@@ -61,6 +61,8 @@ class _PictureState extends State<Picture> {
   CameraLensDirection _cameraDirection;
   bool _flipRed;
   String _filePath;
+  // Reversing the index so that we start at the top left instead of the bottom right.
+  int _reverseIndex;
 
   @override
   initState() {
@@ -69,13 +71,11 @@ class _PictureState extends State<Picture> {
     _filePath = '${widget.countdown.storage.path}/picture${widget.index}.jpg';
     _flipRed = true;
     _cameraDirection = CameraLensDirection.front;
-
+    _reverseIndex = widget.countdown.duration.inMinutes - widget.index;
     _color = Colors.yellow;
 
-    // Reversing the index so that we start at the top left instead of the bottom right.
-    int index = widget.countdown.duration.inMinutes - widget.index;
-    if (widget.countdown.mostRecentTime.inMinutes < index) {
-        _image = Image.file(File(_filePath), fit: BoxFit.cover);
+    if (widget.countdown.mostRecentTime.inMinutes < _reverseIndex) {
+      _image = makeTintedImage(calculateColor(widget.countdown.mostRecentTime));
     } else {
       _image = makeClock();
     }
@@ -83,22 +83,36 @@ class _PictureState extends State<Picture> {
     // TODO(efortuna): I feel like there should be a better way to do this.
     _colorUpdates =
         widget.countdown.stream.listen((Duration newDuration) async {
-      // Normalize rating to (0,1) and interpolate color from yellow to red as we run out of time
-      var calculatedColor = Color.lerp(Colors.red, Colors.yellow,
-          newDuration.inMinutes / widget.countdown.duration.inMinutes);
-      if (newDuration.inMinutes == index && newDuration.inSeconds % 60 < 10) {
-        // Create "flashing" effect in the last 10 seconds before taking a picture.
-        calculatedColor = _flipRed ? Colors.red : Colors.yellow;
-        _flipRed = !_flipRed;
-      }
+      var calculatedColor = calculateColor(newDuration);
       setState(() {
         _color = calculatedColor;
       });
-      if (newDuration.inMinutes == index && newDuration.inSeconds % 60 == 0) {
+      if (newDuration.inMinutes == _reverseIndex &&
+          newDuration.inSeconds % 60 == 0) {
         await takePicture();
-        setState(() => _image = Image.file(File(_filePath), fit: BoxFit.cover));
+        setState(() => _image = makeTintedImage(calculatedColor));
       }
     });
+  }
+
+  Widget makeTintedImage(Color tint) {
+    return Stack(fit: StackFit.expand, children: [
+      Image.file(File(_filePath), fit: BoxFit.cover),
+      Opacity(opacity: .7, child: Container(color: tint))
+    ]);
+  }
+
+  Color calculateColor(Duration currentDuration) {
+    // TODO: can I akways just use most recent duration?
+    if (currentDuration.inMinutes == _reverseIndex &&
+        currentDuration.inSeconds % 60 < 10 &&
+        currentDuration.inSeconds % 60 != 0) {
+      // Create "flashing" effect in the last 10 seconds before taking a picture.
+      _flipRed = !_flipRed;
+      return _flipRed ? Colors.red : Colors.yellow;
+    }
+    return Color.lerp(Colors.red, Colors.yellow,
+        currentDuration.inMinutes / widget.countdown.duration.inMinutes);
   }
 
   initializeCamera() async {
@@ -137,7 +151,7 @@ class _PictureState extends State<Picture> {
     return Padding(
       padding: const EdgeInsets.all(2),
       child: AnimatedContainer(
-          height: 125,
+          height: 100,
           color: _color,
           child: _image,
           duration: const Duration(milliseconds: 500)),
