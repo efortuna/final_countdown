@@ -58,6 +58,7 @@ class _PictureState extends State<Picture> {
   Color _color;
   StreamSubscription _colorUpdates;
   CameraController _controller;
+  CameraLensDirection _cameraDirection;
   bool _flipRed;
   String _filePath;
 
@@ -68,16 +69,17 @@ class _PictureState extends State<Picture> {
     _filePath = '${widget.countdown.storage.path}/picture${widget.index}.jpg';
     _flipRed = true;
     _image = makeClock();
-    
+    _cameraDirection = CameraLensDirection.front;
+
     _color = Colors.yellow;
 
     // Reversing the index so that we start at the top left instead of the bottom right.
     int index = widget.countdown.duration.inMinutes - widget.index;
     if (widget.countdown.mostRecentTime.inMinutes < index) {
       try {
-      _image = Image.file(File(_filePath), fit: BoxFit.cover);
+        _image = Image.file(File(_filePath), fit: BoxFit.cover);
       } catch (FileSystemException) {
-        // Currently swallow the exception if we can't find that image. 
+        // Currently swallow the exception if we can't find that image.
         // TODO(efortuna): do something better.
       }
     }
@@ -106,13 +108,20 @@ class _PictureState extends State<Picture> {
   initializeCamera() async {
     List<CameraDescription> cameraOptions = await availableCameras();
     try {
-      var frontCamera = cameraOptions.firstWhere((description) =>
-          description.lensDirection == CameraLensDirection.front);
+      var frontCamera = cameraOptions.firstWhere(
+          (description) => description.lensDirection == _cameraDirection);
       _controller = CameraController(frontCamera, ResolutionPreset.low);
       await _controller.initialize();
     } on StateError catch (e) {
       print('No front-facing camera found: $e');
     }
+    switchCameraLensDirection();
+  }
+
+  switchCameraLensDirection() {
+    _cameraDirection = (_cameraDirection == CameraLensDirection.front)
+        ? CameraLensDirection.back
+        : CameraLensDirection.front;
   }
 
   Future<bool> takePicture() async {
