@@ -7,7 +7,7 @@ class RetroClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var wood = Image.asset('assets/wood.jpg',
-        height: 100.0, width: 500.0, fit: BoxFit.cover);
+        height: 100, width: 500, fit: BoxFit.cover);
     return Container(
       color: Colors.black,
       child: Column(
@@ -17,11 +17,11 @@ class RetroClock extends StatelessWidget {
             child: Card(
               child: Card(
                 color: Colors.grey[800],
-                elevation: 4.0,
-                margin: EdgeInsets.all(10.0),
+                elevation: 4,
+                margin: EdgeInsets.all(10),
                 child: StreamFlipClock(),
               ),
-              elevation: 20.0,
+              elevation: 20,
             ),
           ),
           wood,
@@ -34,12 +34,12 @@ class RetroClock extends StatelessWidget {
 class StreamFlipClock extends StatelessWidget {
   StreamFlipClock();
 
-  final _spacing = const EdgeInsets.symmetric(horizontal: 2.0);
+  final _spacing = const EdgeInsets.symmetric(horizontal: 2);
   static final _digitSize = 96.0;
   static final _panelHeight = _digitSize + 20;
   static final _textStyle = TextStyle(
       fontWeight: FontWeight.bold, fontSize: _digitSize, color: Colors.white);
-  final _borderRadius = const BorderRadius.all(Radius.circular(3.0));
+  final _borderRadius = const BorderRadius.all(Radius.circular(3));
 
   Widget _buildDigit(Stream<int> streamSource, int startValue) {
     return Padding(

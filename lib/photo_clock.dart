@@ -33,7 +33,7 @@ class GridPhotoView extends StatelessWidget {
         Container(
           color: Colors.black,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Table(children: rows),
           ),
         ),
@@ -87,7 +87,7 @@ class _PictureState extends State<Picture> {
             newDuration.inMinutes / widget.countdown.duration.inMinutes);
         setState(() => _image = Stack(fit: StackFit.expand, children: [
               Image.file(File(filename), fit: BoxFit.cover),
-              Opacity(opacity: .5, child: Container(color: countdownColor))
+              Opacity(opacity: .7, child: Container(color: countdownColor))
             ]));
       } else if (!_setPicture && newDuration.inMinutes < nthImage) {
         setState(() => _image = Image.asset(
@@ -129,9 +129,9 @@ class _PictureState extends State<Picture> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(2.0),
+      padding: const EdgeInsets.all(2),
       child: AnimatedContainer(
-          height: 100.0,
+          height: 100,
           color: _color,
           child: _image,
           duration: const Duration(milliseconds: 500)),
@@ -154,7 +154,7 @@ class _PictureState extends State<Picture> {
               return Center(
                   child: Text('${prettyPrintDuration(snapshot.data)}',
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 32.0)));
+                          fontWeight: FontWeight.bold, fontSize: 32)));
             case ConnectionState.done:
               return Text('Time\s up!');
             case ConnectionState.none:
