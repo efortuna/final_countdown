@@ -32,7 +32,7 @@ class GridPhotoView extends StatelessWidget {
         Container(
           color: Colors.black,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Table(children: rows),
           ),
         ),
@@ -135,9 +135,9 @@ class _PictureState extends State<Picture> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(2.0),
+      padding: const EdgeInsets.all(2),
       child: AnimatedContainer(
-          height: 125.0,
+          height: 125,
           color: _color,
           child: _image,
           duration: const Duration(milliseconds: 500)),
@@ -160,7 +160,7 @@ class _PictureState extends State<Picture> {
               return Center(
                   child: Text('${prettyPrintDuration(snapshot.data)}',
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 32.0)));
+                          fontWeight: FontWeight.bold, fontSize: 32)));
             case ConnectionState.done:
               return Text('Time\s up!');
             case ConnectionState.none:
