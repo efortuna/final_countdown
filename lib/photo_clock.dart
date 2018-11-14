@@ -13,12 +13,12 @@ class PhotoClock extends StatelessWidget {
 }
 
 class GridPhotoView extends StatelessWidget {
-  final photosPerRow = 4;
+  final photosPerRow = 3;
 
   @override
   Widget build(BuildContext context) {
     final countdown = CountdownProvider.of(context);
-    final photos = List<Picture>.generate(16, (i) => Picture(countdown, i));
+    final photos = List<Picture>.generate(9, (i) => Picture(countdown, i));
 
     var rows = List<TableRow>.generate(
         photosPerRow,
@@ -75,12 +75,7 @@ class _PictureState extends State<Picture> {
     // Reversing the index so that we start at the top left instead of the bottom right.
     int index = widget.countdown.duration.inMinutes - widget.index;
     if (widget.countdown.mostRecentTime.inMinutes < index) {
-      try {
         _image = Image.file(File(_filePath), fit: BoxFit.cover);
-      } catch (FileSystemException) {
-        // Currently swallow the exception if we can't find that image.
-        // TODO(efortuna): do something better.
-      }
     } else {
       _image = makeClock();
     }
@@ -142,7 +137,7 @@ class _PictureState extends State<Picture> {
     return Padding(
       padding: const EdgeInsets.all(2.0),
       child: AnimatedContainer(
-          height: 100.0,
+          height: 125.0,
           color: _color,
           child: _image,
           duration: const Duration(milliseconds: 500)),
