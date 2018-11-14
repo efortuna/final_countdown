@@ -68,7 +68,6 @@ class _PictureState extends State<Picture> {
     // Search for existing picture.
     _filePath = '${widget.countdown.storage.path}/picture${widget.index}.jpg';
     _flipRed = true;
-    _image = makeClock();
     _cameraDirection = CameraLensDirection.front;
 
     _color = Colors.yellow;
@@ -82,6 +81,8 @@ class _PictureState extends State<Picture> {
         // Currently swallow the exception if we can't find that image.
         // TODO(efortuna): do something better.
       }
+    } else {
+      _image = makeClock();
     }
 
     // TODO(efortuna): I feel like there should be a better way to do this.
@@ -115,6 +116,7 @@ class _PictureState extends State<Picture> {
     } on StateError catch (e) {
       print('No front-facing camera found: $e');
     }
+    // Alternatively this can be triggered by a button.
     switchCameraLensDirection();
   }
 
