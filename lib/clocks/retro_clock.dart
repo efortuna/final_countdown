@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flip_panel/flip_panel.dart';
 
-import 'package:final_countdown/data/countdown_stream.dart';
+import 'package:final_countdown/data/countdown_provider.dart';
 
 class RetroClock extends StatelessWidget {
   @override

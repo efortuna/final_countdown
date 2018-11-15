@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:final_countdown/data/countdown_stream.dart';
+import 'package:final_countdown/data/countdown_provider.dart';
 import 'package:final_countdown/clocks/simple_clock.dart';
 
 void main() {
