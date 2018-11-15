@@ -24,8 +24,8 @@ class GridPhotoView extends StatelessWidget {
   Widget build(BuildContext context) {
     final countdown = CountdownProvider.of(context);
     final storage = PhotoStorageProvider.of(context);
-    final photos = List<Picture>.generate(
-        totalPhotos, (i) => Picture(countdown, storage, i, totalPhotos));
+    final photos = List<TintedImage>.generate(
+        totalPhotos, (i) => TintedImage(countdown, storage, i, totalPhotos));
 
     var rows = List<TableRow>.generate(
         photosPerRow,
@@ -49,8 +49,8 @@ class GridPhotoView extends StatelessWidget {
   }
 }
 
-class Picture extends StatefulWidget {
-  Picture(this.countdown, this.storage, this.index, this.totalTiles);
+class TintedImage extends StatefulWidget {
+  TintedImage(this.countdown, this.storage, this.index, this.totalTiles);
   final CountdownProvider countdown;
   final PhotoDirectory storage;
   final totalTiles;
@@ -59,10 +59,10 @@ class Picture extends StatefulWidget {
   /// to know when it should take a picture.
   final index;
   @override
-  createState() => _PictureState();
+  createState() => _TintedImageState();
 }
 
-class _PictureState extends State<Picture> {
+class _TintedImageState extends State<TintedImage> {
   Widget _image;
   Color _color;
   StreamSubscription _colorUpdates;

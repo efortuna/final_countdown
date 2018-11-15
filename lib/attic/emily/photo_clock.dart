@@ -41,7 +41,7 @@ class _PhotoViewState extends State<PhotoView> {
 
   @override
   Widget build(BuildContext context) {
-    return Hero(tag: 'hi', child: Image.asset('assets/wood.jpg'));
+    //return Hero(tag: 'hi', child: Image.asset('assets/wood.jpg'));
     return Image.file(widget.photoFile);
   }
 
@@ -78,8 +78,8 @@ class _PictureState extends State<Picture> {
           setState(() => size = 20.0);
         }
         return AnimatedContainer(height: size, child: Image.asset('assets/wood.jpg'), duration: const Duration(seconds: 3));
-        return Hero(tag: 'hi', child: Image.asset('assets/wood.jpg', height: 20.0));
-        return Container(height: 20.0, color: Colors.red);
+        //return Hero(tag: 'hi', child: Image.asset('assets/wood.jpg', height: 20.0));
+        //return Container(height: 20.0, color: Colors.red);
       })
     );
   }
