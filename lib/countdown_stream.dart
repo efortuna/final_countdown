@@ -38,9 +38,9 @@ class FinalCountdown {
     if (persist) duration = await loadDuration(duration);
 
     var remaining = duration;
-    while (remaining > const Duration()) {
-      remaining -= frequency;
+    while (remaining >= const Duration()) {
       yield remaining;
+      remaining -= frequency;
       await Future.delayed(frequency);
       // Save cache
       if (persist) saveDuration(remaining);

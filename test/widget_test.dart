@@ -11,9 +11,9 @@ void main() {
       Directionality(
         textDirection: TextDirection.ltr,
         child: CountdownProvider(
-          duration: const Duration(seconds: 3),
+          duration: const Duration(seconds: 2),
           persist: false,
-          child: SimpleClock(style: TextStyle()),
+          child: SimpleClock(),
         ),
       ),
     );
@@ -38,11 +38,11 @@ void main() {
         .runAsync(() => Future.delayed(const Duration(milliseconds: 1000)));
     await tester.pump(const Duration(milliseconds: 1000));
     expect(find.text('00:00'), findsOneWidget);
+    // print(find.byType(Text));
 
     // Run the countdown timer to completion
     await tester
         .runAsync(() => Future.delayed(const Duration(milliseconds: 1000)));
     await tester.pump(const Duration(milliseconds: 1000));
-    // print(find.byType(Text));
   });
 }
