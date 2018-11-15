@@ -8,36 +8,31 @@ import 'package:final_countdown/data/countdown_provider.dart';
 class RetroClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var wood = Image.asset('assets/wood.jpg',
-        height: 100, width: 500, fit: BoxFit.cover);
-    return Container(
-      color: Colors.black,
-      child: Column(
-        children: <Widget>[
-          wood,
-          Expanded(
-            child: Card(
-              child: Card(
-                color: Colors.grey[800],
-                elevation: 4,
-                margin: EdgeInsets.all(10),
-                child: StreamFlipClock(),
-              ),
-              elevation: 20,
-            ),
+    return Stack(
+      alignment: AlignmentDirectional.center,
+      children: <Widget>[
+        Positioned.fill(
+          child: Image.asset('assets/wood.jpg', fit: BoxFit.cover),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 200.0, horizontal: 10.0),
+          child: Card(
+            shape: RoundedRectangleBorder(
+                side: BorderSide(color: Colors.white, width: 10.0),
+                borderRadius: BorderRadius.circular(20)),
+            color: Colors.grey[800],
+            elevation: 4,
+            child: StreamFlipClock(),
           ),
-          wood,
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
 class StreamFlipClock extends StatelessWidget {
-  StreamFlipClock();
-
   final _spacing = const EdgeInsets.symmetric(horizontal: 2);
-  static final _digitSize = 96.0;
+  static final _digitSize = 90.0;
   static final _panelHeight = _digitSize + 20;
   static final _textStyle = TextStyle(
       fontWeight: FontWeight.bold, fontSize: _digitSize, color: Colors.white);
