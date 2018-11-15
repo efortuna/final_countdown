@@ -22,10 +22,80 @@ class RetroClock extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20)),
             color: Colors.grey[800],
             elevation: 4,
-            child: StreamFlipClock(),
+            child: ClockPanel(),
           ),
         ),
       ],
+    );
+  }
+}
+
+class ClockPanel extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final countdown = CountdownProvider.of(context);
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            StreamFlipDigit(countdown.tensMinuteDigitStream),
+            StreamFlipDigit(countdown.onesMinuteDigitStream),
+            //SizedBox(width: 50),
+            FlipBox(':'),
+            StreamFlipDigit(countdown.onesMinuteDigitStream),
+            StreamFlipDigit(countdown.onesSecondDigitStream),
+          ]),
+    );
+  }
+}
+
+class StreamFlipDigit extends StatelessWidget {
+  StreamFlipDigit(this.digitStream);
+  final Stream<int> digitStream;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: FlipPanel<int>.stream(
+          itemStream: digitStream,
+          initValue: 7,
+          direction: FlipDirection.down,
+          itemBuilder: (context, digit) {
+            return FlipBox(digit.toString());
+          }),
+    );
+  }
+}
+
+class FlipBox extends StatelessWidget {
+  FlipBox(this.str);
+  final String str;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SizedBox(
+          width: 40,
+          height: 50,
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: Text(
+              str,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 60,
+                  color: Colors.white),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
