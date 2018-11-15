@@ -1,10 +1,13 @@
-import 'package:final_countdown/storage_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:final_countdown/countdown_stream.dart';
-import 'package:final_countdown/simple_clock.dart';
-import 'package:camera/camera.dart';
 import 'dart:async';
 import 'dart:io';
+
+import 'package:flutter/material.dart';
+
+import 'package:camera/camera.dart';
+
+import 'package:final_countdown/data/countdown_stream.dart';
+import 'package:final_countdown/data/storage_provider.dart';
+import 'package:final_countdown/clocks/simple_clock.dart';
 
 class PhotoClock extends StatelessWidget {
   @override

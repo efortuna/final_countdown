@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:final_countdown/countdown_persistence.dart';
+
+import 'package:final_countdown/data/countdown_persistence.dart';
 
 /// Provides the storage directory for photos
 class PhotoStorageProvider extends InheritedWidget {

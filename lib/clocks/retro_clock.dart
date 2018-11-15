@@ -1,7 +1,9 @@
 // Inspired by: https://medium.com/flutter-community/make-3d-flip-animation-in-flutter-16c006bb3798
 import 'package:flutter/material.dart';
+
 import 'package:flip_panel/flip_panel.dart';
-import 'package:final_countdown/countdown_stream.dart';
+
+import 'package:final_countdown/data/countdown_stream.dart';
 
 class RetroClock extends StatelessWidget {
   @override

@@ -1,10 +1,11 @@
-import 'package:final_countdown/storage_provider.dart';
 import 'package:flutter/material.dart';
 
-import 'package:final_countdown/simple_clock.dart';
-import 'package:final_countdown/retro_clock.dart';
-import 'package:final_countdown/photo_clock.dart';
-import 'package:final_countdown/countdown_stream.dart';
+import 'package:final_countdown/data/storage_provider.dart';
+import 'package:final_countdown/data/countdown_stream.dart';
+
+import 'package:final_countdown/clocks/simple_clock.dart';
+import 'package:final_countdown/clocks/retro_clock.dart';
+import 'package:final_countdown/clocks/photo_clock.dart';
 
 void main() => runApp(CountdownApp());
 

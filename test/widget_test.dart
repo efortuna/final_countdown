@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:final_countdown/simple_clock.dart';
-import 'package:final_countdown/countdown_stream.dart';
+import 'package:final_countdown/data/countdown_stream.dart';
+import 'package:final_countdown/clocks/simple_clock.dart';
 
 void main() {
   testWidgets('Simple Clock test', (WidgetTester tester) async {

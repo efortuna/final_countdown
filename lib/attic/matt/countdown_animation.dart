@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:final_countdown/matt/text_duration.dart';
-import 'package:final_countdown/matt/flipper.dart';
+import 'package:final_countdown/attic/matt/text_duration.dart';
+import 'package:final_countdown/attic/matt/flipper.dart';
 
 class Countdown extends StatefulWidget {
   Countdown({this.duration});

@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:final_countdown/countdown_stream.dart';
+
+import 'package:final_countdown/data/countdown_stream.dart';
 import 'package:final_countdown/utils.dart';
 
 class SimpleClock extends StatelessWidget {

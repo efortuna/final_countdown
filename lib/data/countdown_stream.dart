@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'package:final_countdown/countdown_persistence.dart';
+import 'package:final_countdown/data/countdown_persistence.dart';
 
 /// Utility class that provides access to the time stream and also converts the
 /// time stream separate streams of the individual digits.
