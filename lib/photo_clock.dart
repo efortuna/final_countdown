@@ -80,7 +80,8 @@ class _PictureState extends State<Picture> {
     if (widget.countdown.mostRecentTime.inMinutes < _reverseIndex) {
       _image = makeTintedImage(calculateColor());
     } else {
-      _image = makeClock();
+      _image = SimpleClock(
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32));
     }
 
     // TODO(efortuna): I feel like there should be a better way to do this.
@@ -99,8 +100,15 @@ class _PictureState extends State<Picture> {
   }
 
   Widget makeTintedImage(Color tint) {
+    var image;
+    var file = File(_filePath);
+    if (file.existsSync()) {
+      image = Image.file(File(_filePath), fit: BoxFit.cover);
+    } else {
+      image = Container(decoration: FlutterLogoDecoration());
+    }
     return Stack(fit: StackFit.expand, children: [
-      Image.file(File(_filePath), fit: BoxFit.cover),
+      image,
       Opacity(opacity: .7, child: Container(color: tint))
     ]);
   }
@@ -169,7 +177,4 @@ class _PictureState extends State<Picture> {
     _colorUpdates.cancel();
     super.deactivate();
   }
-
-  makeClock() => SimpleClock(style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 32));
 }
