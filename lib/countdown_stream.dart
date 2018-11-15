@@ -2,16 +2,21 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
-import 'dart:io';
 
 import 'package:final_countdown/countdown_persistence.dart';
 
 /// Utility class that provides access to the time stream and also converts the
 /// time stream separate streams of the individual digits.
 class FinalCountdown {
-  FinalCountdown(this.duration,
-      {Duration frequency = const Duration(seconds: 1)})
-      : time = _countdown(duration, frequency: frequency).asBroadcastStream();
+  FinalCountdown(
+    this.duration, {
+    Duration frequency = const Duration(seconds: 1),
+    bool persist = true,
+  }) : time = _countdown(
+          duration,
+          frequency: frequency,
+          persist: persist,
+        ).asBroadcastStream();
   final Stream<Duration> time;
   final Duration duration;
 
@@ -24,10 +29,13 @@ class FinalCountdown {
   Stream<int> get onesSecondDigit =>
       time.map<int>((Duration d) => (d.inSeconds % 60) % 10);
 
-  static Stream<Duration> _countdown(Duration duration,
-      {Duration frequency = const Duration(seconds: 1)}) async* {
+  static Stream<Duration> _countdown(
+    Duration duration, {
+    Duration frequency = const Duration(seconds: 1),
+    persist = true,
+  }) async* {
     // Check the cache for a stored duration
-    duration = await loadDuration(duration);
+    if (persist) duration = await loadDuration(duration);
 
     var remaining = duration;
     while (remaining > const Duration()) {
@@ -35,10 +43,10 @@ class FinalCountdown {
       yield remaining;
       await Future.delayed(frequency);
       // Save cache
-      saveDuration(remaining);
+      if (persist) saveDuration(remaining);
     }
     // Wipe the cache
-    deleteDuration();
+    if (persist) deleteDuration();
   }
 }
 
@@ -51,10 +59,14 @@ class CountdownProvider extends InheritedWidget {
     @required Widget child,
     @required this.duration,
     this.frequency = const Duration(seconds: 1),
+    bool persist = true,
   })  : assert(child != null),
         assert(duration != null),
-        countdown = FinalCountdown(duration, frequency: frequency),
-        storage = PhotoDirectory(),
+        countdown = FinalCountdown(
+          duration,
+          frequency: frequency,
+          persist: persist,
+        ),
         super(key: key, child: child) {
     _subject.addStream(countdown.time);
     _tensMinuteDigitSubject.addStream(countdown.tensMinuteDigit);
@@ -65,7 +77,6 @@ class CountdownProvider extends InheritedWidget {
 
   final Duration duration, frequency;
   final FinalCountdown countdown;
-  final PhotoDirectory storage;
 
   final _subject = BehaviorSubject<Duration>();
   final _tensMinuteDigitSubject = BehaviorSubject<int>();
@@ -91,17 +102,4 @@ class CountdownProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(InheritedWidget _) => false;
-}
-
-// Accessor to a temporary directory where photos are stored, so that the photos are 
-// persistent across hot restarts, from countdown to countdown.
-class PhotoDirectory {
-  PhotoDirectory() {
-    initializeDirectory();
-  }
-
-  initializeDirectory() async {
-    path = (await loadStorage()).path;
-  }
-  String path;
 }

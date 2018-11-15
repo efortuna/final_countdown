@@ -1,29 +1,48 @@
-// This is a basic Flutter widget test.
-// To perform an interaction with a widget in your test, use the WidgetTester utility that Flutter
-// provides. For example, you can send tap and scroll gestures. You can also use WidgetTester to
-// find child widgets in the widget tree, read text, and verify that the values of widget properties
-// are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:final_countdown/main.dart';
+import 'package:final_countdown/simple_clock.dart';
+import 'package:final_countdown/countdown_stream.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Simple Clock test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(new MyApp());
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: CountdownProvider(
+          duration: const Duration(seconds: 3),
+          persist: false,
+          child: SimpleClock(style: TextStyle()),
+        ),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // That the initial state is waiting
+    expect(find.text('Waiting ...'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // 2 seconds to go
+    await tester
+        .runAsync(() => Future.delayed(const Duration(milliseconds: 1)));
+    await tester.pump(const Duration(milliseconds: 1));
+    expect(find.text('00:02'), findsOneWidget);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // 1 second to go
+    await tester
+        .runAsync(() => Future.delayed(const Duration(milliseconds: 999)));
+    await tester.pump(const Duration(milliseconds: 999));
+    expect(find.text('00:01'), findsOneWidget);
+
+    // 0 second to go
+    await tester
+        .runAsync(() => Future.delayed(const Duration(milliseconds: 1000)));
+    await tester.pump(const Duration(milliseconds: 1000));
+    expect(find.text('00:00'), findsOneWidget);
+
+    // Run the countdown timer to completion
+    await tester
+        .runAsync(() => Future.delayed(const Duration(milliseconds: 1000)));
+    await tester.pump(const Duration(milliseconds: 1000));
+    // print(find.byType(Text));
   });
 }

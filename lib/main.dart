@@ -1,3 +1,4 @@
+import 'package:final_countdown/storage_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:final_countdown/simple_clock.dart';
@@ -5,11 +6,9 @@ import 'package:final_countdown/retro_clock.dart';
 import 'package:final_countdown/photo_clock.dart';
 import 'package:final_countdown/countdown_stream.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(CountdownApp());
 
-class MyApp extends StatelessWidget {
-  static final countdown = FinalCountdown(const Duration(minutes: 15));
-
+class CountdownApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,15 +17,17 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
-        body: CountdownProvider(
-          duration: const Duration(minutes: 15),
-          child: Center(
-            child: PageView(
-              children: <Widget>[
-                SimpleClock(),
-                RetroClock(),
-                PhotoClock(),
-              ],
+        body: PhotoStorageProvider(
+          child: CountdownProvider(
+            duration: const Duration(minutes: 15),
+            child: Center(
+              child: PageView(
+                children: <Widget>[
+                  SimpleClock(),
+                  RetroClock(),
+                  PhotoClock(),
+                ],
+              ),
             ),
           ),
         ),

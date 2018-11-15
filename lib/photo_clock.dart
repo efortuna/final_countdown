@@ -1,3 +1,4 @@
+import 'package:final_countdown/storage_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:final_countdown/countdown_stream.dart';
 import 'package:final_countdown/simple_clock.dart';
@@ -19,8 +20,9 @@ class GridPhotoView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final countdown = CountdownProvider.of(context);
+    final storage = PhotoStorageProvider.of(context);
     final photos = List<Picture>.generate(
-        totalPhotos, (i) => Picture(countdown, i, totalPhotos));
+        totalPhotos, (i) => Picture(countdown, storage, i, totalPhotos));
 
     var rows = List<TableRow>.generate(
         photosPerRow,
@@ -45,8 +47,9 @@ class GridPhotoView extends StatelessWidget {
 }
 
 class Picture extends StatefulWidget {
-  Picture(this.countdown, this.index, this.totalTiles);
+  Picture(this.countdown, this.storage, this.index, this.totalTiles);
   final CountdownProvider countdown;
+  final PhotoStorageProvider storage;
   final totalTiles;
 
   /// Indicator of what number this picture is, important
@@ -71,7 +74,7 @@ class _PictureState extends State<Picture> {
   initState() {
     super.initState();
     // Search for existing picture.
-    _filePath = '${widget.countdown.storage.path}/picture${widget.index}.jpg';
+    _filePath = '${widget.storage.storage.path}/picture${widget.index}.jpg';
     _flipRed = true;
     _cameraDirection = CameraLensDirection.front;
     _reverseIndex = widget.countdown.duration.inMinutes - widget.index;
@@ -107,10 +110,9 @@ class _PictureState extends State<Picture> {
     } else {
       image = Container(decoration: FlutterLogoDecoration());
     }
-    return Stack(fit: StackFit.expand, children: [
-      image,
-      Opacity(opacity: .7, child: Container(color: tint))
-    ]);
+    return Stack(
+        fit: StackFit.expand,
+        children: [image, Opacity(opacity: .7, child: Container(color: tint))]);
   }
 
   Color calculateColor({Duration duration}) {
