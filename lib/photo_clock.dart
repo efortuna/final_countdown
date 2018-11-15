@@ -84,7 +84,11 @@ class _PictureState extends State<Picture> {
       _image = makeTintedImage(calculateColor());
     } else {
       _image = SimpleClock(
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32));
+        TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 32,
+        ),
+      );
     }
 
     // TODO(efortuna): I feel like there should be a better way to do this.
