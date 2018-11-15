@@ -79,8 +79,8 @@ class _PictureState extends State<Picture> {
     // Search for existing picture.
     _filePath = '${widget.storage.path}/picture${widget.index}.jpg';
     _flipRed = true;
-    _cameraDirection = CameraLensDirection.front;
     _reverseIndex = widget.countdown.duration.inMinutes - widget.index;
+    _cameraDirection = _reverseIndex % 2 == 0 ? CameraLensDirection.front : CameraLensDirection.back;
     _color = Colors.yellow;
 
     if (widget.countdown.mostRecentTime.inMinutes < _reverseIndex) {
@@ -119,7 +119,7 @@ class _PictureState extends State<Picture> {
     }
     return Stack(
         fit: StackFit.expand,
-        children: [image, Opacity(opacity: .7, child: Container(color: tint))]);
+        children: [image, Opacity(opacity: .4, child: Container(color: tint))]);
   }
 
   Color calculateColor({Duration duration}) {
@@ -148,14 +148,6 @@ class _PictureState extends State<Picture> {
     } on StateError catch (e) {
       print('No front-facing camera found: $e');
     }
-    // Alternatively this can be triggered by a button.
-    switchCameraLensDirection();
-  }
-
-  switchCameraLensDirection() {
-    _cameraDirection = (_cameraDirection == CameraLensDirection.front)
-        ? CameraLensDirection.back
-        : CameraLensDirection.front;
   }
 
   Future<bool> takePicture() async {
