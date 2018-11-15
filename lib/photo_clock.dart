@@ -4,11 +4,18 @@ import 'package:final_countdown/simple_clock.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter_sidekick/flutter_sidekick.dart';
 
 class PhotoClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GridPhotoView();
+    return Stack(children: [
+      GridPhotoView(),
+      Sidekick(
+          child: Container(color: Colors.blue),
+          tag: 'source',
+          targetTag: 'target2'),
+    ]);
   }
 }
 
@@ -56,7 +63,8 @@ class Picture extends StatefulWidget {
   createState() => _PictureState();
 }
 
-class _PictureState extends State<Picture> {
+class _PictureState extends State<Picture> with TickerProviderStateMixin {
+  SidekickController sidekickController;
   Widget _image;
   Color _color;
   StreamSubscription _colorUpdates;
@@ -76,6 +84,11 @@ class _PictureState extends State<Picture> {
     _cameraDirection = CameraLensDirection.front;
     _reverseIndex = widget.countdown.duration.inMinutes - widget.index;
     _color = Colors.yellow;
+    sidekickController = SidekickController(
+      vsync: this,
+      duration: Duration(seconds: 1),
+    );
+    //Future.delayed(Duration(seconds: 3), () {sidekickController.moveToTarget(context);
 
     if (widget.countdown.mostRecentTime.inMinutes < _reverseIndex) {
       _image = makeTintedImage(calculateColor());
@@ -164,17 +177,21 @@ class _PictureState extends State<Picture> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(2),
-      child: AnimatedContainer(
-          height: 100,
-          color: _color,
-          child: _image,
-          duration: const Duration(milliseconds: 500)),
+      child: Sidekick(
+        tag: 'target${widget.index}',
+              child: AnimatedContainer(
+            height: 100,
+            color: _color,
+            child: _image,
+            duration: const Duration(milliseconds: 500)),
+      ),
     );
   }
 
   @override
-  deactivate() {
+  void dispose() {
     _colorUpdates.cancel();
-    super.deactivate();
+    sidekickController?.dispose();
+    super.dispose();
   }
 }
