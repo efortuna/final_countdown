@@ -3,7 +3,9 @@ import 'package:final_countdown/countdown_stream.dart';
 import 'package:final_countdown/utils.dart';
 
 class SimpleClock extends StatelessWidget {
-  SimpleClock();
+  SimpleClock({this.style});
+
+  final TextStyle style;
 
   @override
   Widget build(BuildContext context) {
@@ -14,14 +16,14 @@ class SimpleClock extends StatelessWidget {
               builder: (context, AsyncSnapshot<Duration> snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
-                    return Text('Waiting ...');
+                    return Text('Waiting ...', style: style);
                   case ConnectionState.active:
-                    return Text('Time ${prettyPrintDuration(snapshot.data)}');
+                    return Text('${prettyPrintDuration(snapshot.data)}', style: style);
                   case ConnectionState.done:
-                    return Text('Time\s up!');
+                    return Text('Time\s up!', style: style);
                   case ConnectionState.none:
                     return Text(
-                        'Entered oblivion; this should never have happened');
+                        'Entered oblivion; this should never have happened', style: style);
                 }
               },
             ),

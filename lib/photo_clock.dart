@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:final_countdown/countdown_stream.dart';
-import 'package:final_countdown/utils.dart';
+import 'package:final_countdown/simple_clock.dart';
 import 'package:camera/camera.dart';
 import 'dart:async';
 import 'dart:io';
@@ -13,12 +13,14 @@ class PhotoClock extends StatelessWidget {
 }
 
 class GridPhotoView extends StatelessWidget {
-  final photosPerRow = 4;
+  static final photosPerRow = 4;
+  static final totalPhotos = photosPerRow * photosPerRow;
 
   @override
   Widget build(BuildContext context) {
     final countdown = CountdownProvider.of(context);
-    final photos = List<Picture>.generate(16, (i) => Picture(countdown, i));
+    final photos = List<Picture>.generate(
+        totalPhotos, (i) => Picture(countdown, i, totalPhotos));
 
     var rows = List<TableRow>.generate(
         photosPerRow,
@@ -43,8 +45,9 @@ class GridPhotoView extends StatelessWidget {
 }
 
 class Picture extends StatefulWidget {
-  Picture(this.countdown, this.index);
+  Picture(this.countdown, this.index, this.totalTiles);
   final CountdownProvider countdown;
+  final totalTiles;
 
   /// Indicator of what number this picture is, important
   /// to know when it should take a picture.
@@ -75,7 +78,7 @@ class _PictureState extends State<Picture> {
     _color = Colors.yellow;
 
     if (widget.countdown.mostRecentTime.inMinutes < _reverseIndex) {
-      _image = makeTintedImage(calculateColor(widget.countdown.mostRecentTime));
+      _image = makeTintedImage(calculateColor());
     } else {
       _image = makeClock();
     }
@@ -83,7 +86,7 @@ class _PictureState extends State<Picture> {
     // TODO(efortuna): I feel like there should be a better way to do this.
     _colorUpdates =
         widget.countdown.stream.listen((Duration newDuration) async {
-      var calculatedColor = calculateColor(newDuration);
+      var calculatedColor = calculateColor(duration: newDuration);
       setState(() {
         _color = calculatedColor;
       });
@@ -102,17 +105,20 @@ class _PictureState extends State<Picture> {
     ]);
   }
 
-  Color calculateColor(Duration currentDuration) {
-    // TODO: can I akways just use most recent duration?
-    if (currentDuration.inMinutes == _reverseIndex &&
-        currentDuration.inSeconds % 60 < 10 &&
-        currentDuration.inSeconds % 60 != 0) {
+  Color calculateColor({Duration duration}) {
+    if (duration == null) {
+      return Color.lerp(
+          Colors.red, Colors.yellow, _reverseIndex / widget.totalTiles);
+    }
+    if (duration.inMinutes == _reverseIndex &&
+        duration.inSeconds % 60 < 10 &&
+        duration.inSeconds % 60 != 0) {
       // Create "flashing" effect in the last 10 seconds before taking a picture.
       _flipRed = !_flipRed;
       return _flipRed ? Colors.red : Colors.yellow;
     }
     return Color.lerp(Colors.red, Colors.yellow,
-        currentDuration.inMinutes / widget.countdown.duration.inMinutes);
+        duration.inMinutes / widget.countdown.duration.inMinutes);
   }
 
   initializeCamera() async {
@@ -164,22 +170,6 @@ class _PictureState extends State<Picture> {
     super.deactivate();
   }
 
-  makeClock() => StreamBuilder(
-        stream: widget.countdown.stream,
-        builder: (context, AsyncSnapshot<Duration> snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return Text('Waiting ...');
-            case ConnectionState.active:
-              return Center(
-                  child: Text('${prettyPrintDuration(snapshot.data)}',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 32)));
-            case ConnectionState.done:
-              return Text('Time\s up!');
-            case ConnectionState.none:
-              return Text('Entered oblivion; this should never have happened');
-          }
-        },
-      );
+  makeClock() => SimpleClock(style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 32));
 }
