@@ -10,8 +10,10 @@ class PhotoStorageProvider extends InheritedWidget {
         super(key: key, child: child);
   final PhotoDirectory storage;
 
-  static PhotoStorageProvider of(BuildContext context) =>
-      context.inheritFromWidgetOfExactType(PhotoStorageProvider);
+  static PhotoDirectory of(BuildContext context) =>
+      (context.inheritFromWidgetOfExactType(PhotoStorageProvider)
+              as PhotoStorageProvider)
+          ?.storage;
 
   @override
   bool updateShouldNotify(InheritedWidget _) => false;

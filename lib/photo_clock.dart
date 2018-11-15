@@ -49,7 +49,7 @@ class GridPhotoView extends StatelessWidget {
 class Picture extends StatefulWidget {
   Picture(this.countdown, this.storage, this.index, this.totalTiles);
   final CountdownProvider countdown;
-  final PhotoStorageProvider storage;
+  final PhotoDirectory storage;
   final totalTiles;
 
   /// Indicator of what number this picture is, important
@@ -74,7 +74,7 @@ class _PictureState extends State<Picture> {
   initState() {
     super.initState();
     // Search for existing picture.
-    _filePath = '${widget.storage.storage.path}/picture${widget.index}.jpg';
+    _filePath = '${widget.storage.path}/picture${widget.index}.jpg';
     _flipRed = true;
     _cameraDirection = CameraLensDirection.front;
     _reverseIndex = widget.countdown.duration.inMinutes - widget.index;
