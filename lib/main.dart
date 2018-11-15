@@ -17,21 +17,26 @@ class CountdownApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(
-        body: PhotoStorageProvider(
-          child: CountdownProvider(
-            duration: const Duration(minutes: 15),
-            child: Center(
-              child: PageView(
-                children: <Widget>[
-                  SimpleClock(),
-                  RetroClock(),
-                  PhotoClock(),
-                ],
-              ),
-            ),
-          ),
+      home: CountdownProvider(
+        duration: const Duration(minutes: 15),
+        child: PhotoStorageProvider(
+          child: CountdownPage(),
         ),
+      ),
+    );
+  }
+}
+
+class CountdownPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: PageView(
+        children: <Widget>[
+          SimpleClock(),
+          RetroClock(),
+          PhotoClock(),
+        ],
       ),
     );
   }
