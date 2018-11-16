@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:camera/camera.dart';
 
 import 'package:final_countdown/data/countdown_provider.dart';
@@ -16,7 +17,7 @@ class PhotoClock extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Image.asset('assets/camera_top.png'),
-          PhotoView(PhotoStorageProvider.of(context).path),
+          PhotoReel(PhotoStorageProvider.of(context).path),
           Stack(
             alignment: AlignmentDirectional.center,
             children: <Widget>[
@@ -35,14 +36,14 @@ class PhotoClock extends StatelessWidget {
   }
 }
 
-class PhotoView extends StatefulWidget {
-  PhotoView(this.path);
+class PhotoReel extends StatefulWidget {
+  PhotoReel(this.path);
   final String path;
   @override
-  _PhotoViewState createState() => _PhotoViewState();
+  _PhotoReelState createState() => _PhotoReelState();
 }
 
-class _PhotoViewState extends State<PhotoView> {
+class _PhotoReelState extends State<PhotoReel> {
   List<Widget> _photos;
   CameraController _controller;
   CameraLensDirection _cameraDirection;
@@ -68,16 +69,21 @@ class _PhotoViewState extends State<PhotoView> {
       stream: CountdownProvider.of(context).stream,
       builder: (BuildContext context, AsyncSnapshot<Duration> snapshot) {
         if (snapshot.hasData) {
-          if (snapshot.data.inSeconds % 60 == 0) {
+          if (snapshot.data.inSeconds % 60 == 0 &&
+              snapshot.data.inSeconds != 0) {
             takePicture(PhotoStorageProvider.of(context).path);
           }
           return Expanded(
-              child: Container(
-                  color: Colors.black,
-                  child: ListView(
-                    children: _photos,
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                  ))); // TODO: display something else if it is 0?
+            child: Container(
+              color: Colors.black,
+              child: _photos.length == 0
+                  ? SpinKitRipple(color: Colors.white)
+                  : ListView(
+                      children: _photos,
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                    ),
+            ),
+          );
         } else {
           return Container(height: 200);
         }
@@ -105,7 +111,7 @@ class _PhotoViewState extends State<PhotoView> {
     print('trying to save $filePath !!!!!!!');
     try {
       await _controller.takePicture(filePath);
-      setState(() => _photos.add(TintedImage(filePath)));
+      setState(() => _photos = List.from(_photos)..add(TintedImage(filePath)));
       print('tok picture here: $filePath ?????????');
       switchLensDirection();
     } on CameraException catch (e) {
@@ -123,22 +129,23 @@ class _PhotoViewState extends State<PhotoView> {
 }
 
 class TintedImage extends StatelessWidget {
-  TintedImage(this.path);
+  TintedImage(this.path) : super(key: ObjectKey(path));
   final String path;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Padding(
+    var color = calculateColor(CountdownProvider.of(context).duration);
+    return Container(
+      color: color,
+      child: Padding(
         padding: const EdgeInsets.all(30.0),
-        child: Image.file(File(path), width: 370),
+        child: Image.file(
+          File(path),
+          color: color,
+          colorBlendMode: BlendMode.overlay,
+        ),
       ),
-      Container(color: Colors.green, width: 370, height: 100,)
-      /*Opacity(
-          opacity: 1,
-          child: Container(
-              color: calculateColor(CountdownProvider.of(context).duration)))*/
-    ]);
+    );
   }
 
   Color calculateColor(Duration totalTime) => Color.lerp(
