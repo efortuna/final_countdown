@@ -93,9 +93,9 @@ class _PhotoReelState extends State<PhotoReel> {
           if (snapshot.data.inSeconds % 60 == 0 &&
               snapshot.data.inSeconds != 0) {
             takePicture(PhotoStorageProvider.of(context).path);
-          } else if (snapshot.data.inSeconds % 10 == 5) {
+          } else if (snapshot.data.inSeconds % 10 == 5 && snapshot.data.inSeconds != 0) {
             _scrollToEnd();
-          } else if (snapshot.data.inSeconds % 10 == 0) {
+          } else if (snapshot.data.inSeconds % 10 == 0 && snapshot.data.inSeconds != 0) {
             _scrollToBeginning();
           }
           return Expanded(
