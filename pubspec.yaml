@@ -26,10 +26,16 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  #fonts:
+  #  - family: Fascinate
+  #    fonts: 
+  #      - asset: assets/FascinateInline-Regular.ttf
 
   assets: 
     - assets/brushed_metal.jpg
     - assets/camera_top.png
     - assets/camera_bottom.png
+    - assets/camera_top_white.png
+    - assets/camera_bottom_white.png
     - assets/wood.jpg
     - assets/wood_planks.jpg

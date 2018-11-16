@@ -59,7 +59,7 @@ class StreamFlipDigit extends StatelessWidget {
     return Container(
       child: FlipPanel<int>.stream(
           itemStream: digitStream,
-          initValue: 7,
+          initValue: 7, // TODO: Matt -- Is this intentional?
           direction: FlipDirection.down,
           itemBuilder: (context, digit) {
             return FlipBox(digit.toString());
@@ -91,6 +91,8 @@ class FlipBox extends StatelessWidget {
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 60,
+                  // TODO: Consider setting font too. This one could be cool: 
+                  // https://fonts.google.com/specimen/Wallpoet
                   color: Colors.white),
             ),
           ),
