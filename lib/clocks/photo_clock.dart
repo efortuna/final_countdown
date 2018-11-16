@@ -47,13 +47,34 @@ class _PhotoReelState extends State<PhotoReel> {
   List<Widget> _photos;
   CameraController _controller;
   CameraLensDirection _cameraDirection;
+  ScrollController _scrollController;
   @override
   void initState() {
     _photos = populateFromStorage(context);
     print("PHOTOS HAS ${_photos.length} !!!!!!!");
     _cameraDirection = CameraLensDirection.front;
+    _scrollController = new ScrollController( 
+      initialScrollOffset: 0.0,
+      keepScrollOffset: true, 
+    );
     super.initState();
   }
+
+   void _scrollToEnd() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 2500), 
+      curve: Curves.ease,            
+    );
+  } 
+
+  void _scrollToBeginning() {
+    _scrollController.animateTo(
+      _scrollController.position.minScrollExtent,
+      duration: const Duration(milliseconds: 2500), 
+      curve: Curves.ease,            
+    );
+  } 
 
   List<Widget> populateFromStorage(BuildContext context) {
     return Directory(widget.path)
@@ -72,6 +93,10 @@ class _PhotoReelState extends State<PhotoReel> {
           if (snapshot.data.inSeconds % 60 == 0 &&
               snapshot.data.inSeconds != 0) {
             takePicture(PhotoStorageProvider.of(context).path);
+          } else if (snapshot.data.inSeconds % 10 == 5) {
+            _scrollToEnd();
+          } else if (snapshot.data.inSeconds % 10 == 0) {
+            _scrollToBeginning();
           }
           return Expanded(
             child: Container(
@@ -79,6 +104,7 @@ class _PhotoReelState extends State<PhotoReel> {
               child: _photos.length == 0
                   ? SpinKitRipple(color: Colors.white)
                   : ListView(
+                    controller: _scrollController,
                       children: _photos,
                       padding: EdgeInsets.symmetric(horizontal: 20),
                     ),
@@ -111,7 +137,7 @@ class _PhotoReelState extends State<PhotoReel> {
     print('trying to save $filePath !!!!!!!');
     try {
       await _controller.takePicture(filePath);
-      setState(() => _photos = List.from(_photos)..add(TintedImage(filePath)));
+      setState(() => _photos = List.from(_photos)..add(TintedImage(filePath))); //TODO: order so newer iamge at top? 
       print('tok picture here: $filePath ?????????');
       switchLensDirection();
     } on CameraException catch (e) {
