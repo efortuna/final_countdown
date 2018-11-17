@@ -26,10 +26,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  #fonts:
-  #  - family: Fascinate
-  #    fonts: 
-  #      - asset: assets/FascinateInline-Regular.ttf
+  fonts:
+    - family: Fascinate_Inline
+      fonts: 
+        - asset: assets/Fascinate_Inline/FascinateInline-Regular.ttf
 
   assets: 
     - assets/brushed_metal.jpg

@@ -43,7 +43,7 @@ class ClockPanel extends StatelessWidget {
             StreamFlipDigit(countdown.onesMinuteDigitStream),
             //SizedBox(width: 50),
             FlipBox(':'),
-            StreamFlipDigit(countdown.onesMinuteDigitStream),
+            StreamFlipDigit(countdown.tensSecondDigitStream),
             StreamFlipDigit(countdown.onesSecondDigitStream),
           ]),
     );
