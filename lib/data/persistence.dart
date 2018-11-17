@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
 const durationKey = 'duration';
@@ -26,7 +27,7 @@ Future<Directory> loadStorage() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String dirname = prefs.getString(photoStorageKey);
   if (dirname == null) {
-    Directory dir = await Directory.systemTemp.createTemp();
+    Directory dir = await getApplicationDocumentsDirectory();
     dirname = dir.path;
     await prefs.setString(photoStorageKey, dirname);
   }
