@@ -10,6 +10,11 @@ import 'package:final_countdown/data/countdown_provider.dart';
 import 'package:final_countdown/clocks/simple_clock.dart';
 
 final filmstrip = Image.asset('assets/filmstrip_edge.jpg', height: 20);
+final clockFont = TextStyle(
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Fascinate_Inline',
+            fontSize: 64,
+          );
 
 class PhotoClock extends StatelessWidget {
   @override
@@ -18,11 +23,6 @@ class PhotoClock extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SimpleClock(TextStyle(
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Fascinate_Inline',
-            fontSize: 64,
-          )),
           Expanded(child: Photographer(CountdownProvider.of(context))),
         ],
       ),
@@ -48,9 +48,6 @@ class _PhotographerState extends State<Photographer> {
     _cameraDirection = CameraLensDirection.front;
     _countdownSubscription =
         widget.countdown.stream.listen((Duration currentTime) {
-      if (currentTime.inSeconds % 60 == 0 && currentTime.inSeconds != 0) {
-        takePicture();
-      }
     });
     super.initState();
   }
@@ -81,7 +78,7 @@ class _PhotographerState extends State<Photographer> {
       _controller = CameraController(frontCamera, ResolutionPreset.low);
       await _controller.initialize();
     } on StateError catch (e) {
-      print('No front-facing camera found: $e');
+      print('No camera found in the direction $_cameraDirection: $e');
     }
   }
 
@@ -89,12 +86,7 @@ class _PhotographerState extends State<Photographer> {
     await initializeCamera();
     var directory = await getApplicationDocumentsDirectory();
     var filePath = '${directory.path}/${_photos.length}.jpg';
-    print('FILE APTH $filePath');
     try {
-      await _controller.takePicture(filePath);
-      setState(() => _photos.add(
-          filePath)); //TODO: ensure that this triggers the set state thing properly.
-      print('TAKIG A PICTURE!!!!!!');
     } on CameraException catch (e) {
       print('There was a problem taking the picture. $e');
       return false;
@@ -150,12 +142,7 @@ class Filmstrip extends StatelessWidget {
     return Expanded(
       child: Container(
         color: Colors.black,
-        child: _photoPaths.length == 0
-            ? EmptyFilmStrip()
-            : ListView(
-                scrollDirection: Axis.horizontal,
-                children:
-                    _photoPaths.map((String s) => FilmImage(s)).toList()),
+        child: EmptyFilmStrip(),
       ),
     );
   }

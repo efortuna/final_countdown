@@ -28,13 +28,7 @@ class CountdownPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        children: <Widget>[
-          SimpleClock(),
-          RetroClock(),
-          PhotoClock(),
-        ],
-      ),
+      body: SimpleClock(),
     );
   }
 }
