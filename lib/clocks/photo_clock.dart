@@ -32,7 +32,7 @@ class PhotoClock extends StatelessWidget {
 
 class Photographer extends StatefulWidget {
   Photographer(this.countdown);
-  CountdownProvider countdown;
+  final CountdownProvider countdown;
   @override
   _PhotographerState createState() => _PhotographerState();
 }
@@ -48,7 +48,7 @@ class _PhotographerState extends State<Photographer> {
     _cameraDirection = CameraLensDirection.front;
     _countdownSubscription =
         widget.countdown.stream.listen((Duration currentTime) {
-      if (currentTime.inSeconds % 20 == 0 && currentTime.inSeconds != 0) {
+      if (currentTime.inSeconds % 60 == 0 && currentTime.inSeconds != 0) {
         takePicture();
       }
     });
@@ -93,7 +93,7 @@ class _PhotographerState extends State<Photographer> {
     try {
       await _controller.takePicture(filePath);
       setState(() => _photos.add(
-            filePath)); //TODO: ensure that this triggers the set state thing properly.
+          filePath)); //TODO: ensure that this triggers the set state thing properly.
       print('TAKIG A PICTURE!!!!!!');
     } on CameraException catch (e) {
       print('There was a problem taking the picture. $e');
@@ -111,11 +111,34 @@ class _PhotographerState extends State<Photographer> {
           children: <Widget>[
             Image.asset('assets/camera_top.png'),
             Filmstrip(snapshot.hasData ? _photos : []),
-            Image.asset('assets/camera_bottom.png'),
+            Stack(
+              alignment: AlignmentDirectional.center,
+              children: <Widget>[
+                Image.asset('assets/camera_bottom.png'),
+                RaisedButton(
+                    color: Colors.white,
+                    child: Text(
+                        _cameraDirection == CameraLensDirection.back
+                            ? 'Front Camera'
+                            : 'Back Camera',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Fascinate_Inline',
+                            fontSize: 32)),
+                    onPressed: switchCameraDirection),
+              ],
+            ),
           ],
         );
       },
     );
+  }
+
+  switchCameraDirection() {
+    setState(() => _cameraDirection =
+        (_cameraDirection == CameraLensDirection.back)
+            ? CameraLensDirection.front
+            : CameraLensDirection.back);
   }
 }
 
@@ -132,7 +155,7 @@ class Filmstrip extends StatelessWidget {
             : ListView(
                 scrollDirection: Axis.horizontal,
                 children:
-                    _photoPaths.map((String s) => TintedImage(s)).toList()),
+                    _photoPaths.map((String s) => FilmImage(s)).toList()),
       ),
     );
   }
@@ -148,8 +171,8 @@ class EmptyFilmStrip extends StatelessWidget {
   }
 }
 
-class TintedImage extends StatelessWidget {
-  TintedImage(this.path);
+class FilmImage extends StatelessWidget {
+  FilmImage(this.path);
   final String path;
 
   @override

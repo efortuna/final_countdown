@@ -1,6 +1,4 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 
 const durationKey = 'duration';
 const photoStorageKey = 'photoStorage';
@@ -21,15 +19,4 @@ void deleteDuration() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.remove(durationKey);
   await prefs.remove(photoStorageKey);
-}
-
-Future<Directory> loadStorage() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String dirname = prefs.getString(photoStorageKey);
-  if (dirname == null) {
-    Directory dir = await getApplicationDocumentsDirectory();
-    dirname = dir.path;
-    await prefs.setString(photoStorageKey, dirname);
-  }
-  return Directory(dirname);
 }
