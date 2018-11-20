@@ -11,6 +11,12 @@ import 'package:final_countdown/data/countdown_provider.dart';
 import 'package:final_countdown/clocks/simple_clock.dart';
 import 'package:final_countdown/utils.dart';
 
+final clockFont = TextStyle(
+  fontWeight: FontWeight.bold,
+  fontFamily: 'Fascinate_Inline',
+  fontSize: 64,
+);
+
 class PhotoClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -18,11 +24,7 @@ class PhotoClock extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SimpleClock(TextStyle(
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Fascinate_Inline',
-            fontSize: 64,
-          )),
+          SimpleClock(clockFont),
           Expanded(child: Photographer(CountdownProvider.of(context))),
         ],
       ),
@@ -82,7 +84,7 @@ class _PhotographerState extends State<Photographer> {
       _controller = CameraController(frontCamera, ResolutionPreset.high);
       await _controller.initialize();
     } on StateError catch (e) {
-      print('No front-facing camera found: $e');
+      print('No camera found in the direction $_cameraDirection: $e');
     }
   }
 
