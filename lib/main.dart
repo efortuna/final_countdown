@@ -30,9 +30,11 @@ class CountdownPage extends StatelessWidget {
     return Scaffold(
       body: PageView(
         children: <Widget>[
+          PhotoClock(),
+
           SimpleClock(),
           RetroClock(),
-          PhotoClock(),
+          //PhotoClock(),
         ],
       ),
     );

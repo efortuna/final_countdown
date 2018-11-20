@@ -37,6 +37,8 @@ class ClockPanel extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Row(
+          // TODO: On large screens, like iPads, this looks bad so spaced out.
+          // We need a different layout option.
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             StreamFlipDigit(countdown.tensMinuteDigitStream),

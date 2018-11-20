@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
@@ -48,7 +49,7 @@ class _PhotographerState extends State<Photographer> {
     _cameraDirection = CameraLensDirection.front;
     _countdownSubscription =
         widget.countdown.stream.listen((Duration currentTime) {
-      if (currentTime.inSeconds % 60 == 0 && currentTime.inSeconds != 0) {
+      if (currentTime.inSeconds % 20 == 0 && currentTime.inSeconds != 0) {
         takePicture();
       }
     });
@@ -180,7 +181,7 @@ class FilmImage extends StatelessWidget {
     return Column(
       children: [
         filmstrip,
-        Expanded(child: Image.file(File(path))),
+        Expanded(child: Transform.rotate(angle: math.pi/2, child: Image.file(File(path)))),
         filmstrip,
       ],
     );
