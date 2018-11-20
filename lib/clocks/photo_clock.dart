@@ -7,6 +7,7 @@ import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:final_countdown/data/countdown_provider.dart';
+import 'package:final_countdown/utils.dart';
 import 'package:final_countdown/clocks/simple_clock.dart';
 
 final clockFont = TextStyle(
@@ -60,7 +61,7 @@ class _PhotographerState extends State<Photographer> {
     Directory dir = await getApplicationDocumentsDirectory();
     _photos = dir
         .listSync()
-        .where((FileSystemEntity e) => e is File)
+        .where((FileSystemEntity e) => e is File && e.path.endsWith('jpg'))
         .map<String>((FileSystemEntity file) => file.path)
         .toList()
           ..sort();
@@ -83,7 +84,7 @@ class _PhotographerState extends State<Photographer> {
   takePicture() async {
     await initializeCamera();
     var directory = await getApplicationDocumentsDirectory();
-    var filePath = '${directory.path}/${_photos.length}.jpg';
+    var filePath = '${directory.path}/${prettyPrintDigits(_photos.length)}.jpg';
     try {} on CameraException catch (e) {
       print('There was a problem taking the picture. $e');
       return false;
