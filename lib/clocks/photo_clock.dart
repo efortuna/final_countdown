@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
@@ -8,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:final_countdown/data/countdown_provider.dart';
 import 'package:final_countdown/clocks/simple_clock.dart';
+import 'package:final_countdown/utils.dart';
 
 final filmstrip = Image.asset('assets/filmstrip_edge.jpg', height: 20);
 
@@ -79,7 +81,7 @@ class _PhotographerState extends State<Photographer> {
       var frontCamera = cameraOptions.firstWhere(
           (description) => description.lensDirection == _cameraDirection,
           orElse: () => cameraOptions.first);
-      _controller = CameraController(frontCamera, ResolutionPreset.low);
+      _controller = CameraController(frontCamera, ResolutionPreset.high);
       await _controller.initialize();
     } on StateError catch (e) {
       print('No front-facing camera found: $e');
@@ -89,12 +91,11 @@ class _PhotographerState extends State<Photographer> {
   takePicture() async {
     await initializeCamera();
     var directory = await getApplicationDocumentsDirectory();
-    var filePath = '${directory.path}/${_photos.length}.jpg';
+    var filePath = '${directory.path}/${prettyPrintDigits(_photos.length)}.jpg';
     print('FILE APTH $filePath');
     try {
       await _controller.takePicture(filePath);
-      setState(() => _photos.add(
-          filePath)); //TODO: ensure that this triggers the set state thing properly.
+      setState(() => _photos.insert(0, filePath)); //TODO: ensure that this triggers the set state thing properly.
       print('TAKIG A PICTURE!!!!!!');
     } on CameraException catch (e) {
       print('There was a problem taking the picture. $e');
@@ -155,8 +156,7 @@ class Filmstrip extends StatelessWidget {
             ? EmptyFilmStrip()
             : ListView(
                 scrollDirection: Axis.horizontal,
-                children:
-                    _photoPaths.map((String s) => FilmImage(s)).toList()),
+                children: _photoPaths.map((String s) => FilmImage(s)).toList()),
       ),
     );
   }
@@ -178,10 +178,15 @@ class FilmImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var image = Image.file(File(path), height: 500);
     return Column(
       children: [
         filmstrip,
-        Expanded(child: Image.file(File(path))),
+        Expanded(
+            // TODO: Fix underlying plugin bug.
+            child: Theme.of(context).platform == TargetPlatform.iOS
+                ? Transform.rotate(angle: math.pi / 2, child: image)
+                : image),
         filmstrip,
       ],
     );
