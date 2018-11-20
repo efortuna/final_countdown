@@ -48,7 +48,7 @@ class _PhotographerState extends State<Photographer> {
     _cameraDirection = CameraLensDirection.front;
     _countdownSubscription =
         widget.countdown.stream.listen((Duration currentTime) {
-      if (currentTime.inSeconds % 60 == 0 && currentTime.inSeconds != 0) {
+      if (currentTime.inSeconds % 10 == 0 && currentTime.inSeconds != 0) {
         takePicture();
       }
     });
