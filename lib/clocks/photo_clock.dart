@@ -65,10 +65,11 @@ class _PhotographerState extends State<Photographer> {
     Directory dir = await getApplicationDocumentsDirectory();
     _photos = dir
         .listSync()
-        .where((FileSystemEntity e) => e is File)
+        .where((FileSystemEntity e) => e is File && e.path.endsWith('jpg'))
         .map<String>((FileSystemEntity file) => file.path)
         .toList()
           ..sort();
+    print('NUMBER OF PHOTOS IN STORAGE: ${_photos.length} $_photos');
     return true;
   }
 
