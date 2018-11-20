@@ -191,9 +191,9 @@ class FilmImage extends StatelessWidget {
         filmstrip,
         Expanded(
             // TODO: Fix underlying plugin bug.
-            child: Theme.of(context).platform == TargetPlatform.iOS
-                ? Transform.rotate(angle: math.pi / 2, child: image)
-                : image),
+            child: image), //Theme.of(context).platform == TargetPlatform.iOS
+                //? Transform.rotate(angle: math.pi / 2, child: image)
+                //: image),
         filmstrip,
       ],
     );
