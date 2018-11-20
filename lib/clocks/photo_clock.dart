@@ -11,8 +11,6 @@ import 'package:final_countdown/data/countdown_provider.dart';
 import 'package:final_countdown/clocks/simple_clock.dart';
 import 'package:final_countdown/utils.dart';
 
-final filmstrip = Image.asset('assets/filmstrip_edge.jpg', height: 20);
-
 class PhotoClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -95,7 +93,8 @@ class _PhotographerState extends State<Photographer> {
     print('FILE APTH $filePath');
     try {
       await _controller.takePicture(filePath);
-      setState(() => _photos.insert(0, filePath)); //TODO: ensure that this triggers the set state thing properly.
+      setState(() => _photos.insert(0,
+          filePath)); //TODO: ensure that this triggers the set state thing properly.
       print('TAKIG A PICTURE!!!!!!');
     } on CameraException catch (e) {
       print('There was a problem taking the picture. $e');
@@ -117,17 +116,7 @@ class _PhotographerState extends State<Photographer> {
               alignment: AlignmentDirectional.center,
               children: <Widget>[
                 Image.asset('assets/camera_bottom.png'),
-                RaisedButton(
-                    color: Colors.white,
-                    child: Text(
-                        _cameraDirection == CameraLensDirection.back
-                            ? 'Front Camera'
-                            : 'Back Camera',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Fascinate_Inline',
-                            fontSize: 32)),
-                    onPressed: switchCameraDirection),
+                _cameraDirectionButton(),
               ],
             ),
           ],
@@ -136,7 +125,21 @@ class _PhotographerState extends State<Photographer> {
     );
   }
 
-  switchCameraDirection() {
+  _cameraDirectionButton() {
+    return RaisedButton(
+        color: Colors.white,
+        child: Text(
+            _cameraDirection == CameraLensDirection.back
+                ? 'Front Camera'
+                : 'Back Camera',
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Fascinate_Inline',
+                fontSize: 32)),
+        onPressed: _switchCameraDirection);
+  }
+
+  _switchCameraDirection() {
     setState(() => _cameraDirection =
         (_cameraDirection == CameraLensDirection.back)
             ? CameraLensDirection.front
@@ -163,11 +166,14 @@ class Filmstrip extends StatelessWidget {
 }
 
 class EmptyFilmStrip extends StatelessWidget {
+  final emptyFilmstrip = Image.asset('assets/filmstrip_edge.jpg',
+      height: 20, width: 1000, repeat: ImageRepeat.repeatX);
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [filmstrip, filmstrip],
+      children: [emptyFilmstrip, emptyFilmstrip],
     );
   }
 }
@@ -179,6 +185,7 @@ class FilmImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var image = Image.file(File(path), height: 500);
+    var filmstrip = Image.asset('assets/filmstrip_edge.jpg', height: 20);
     return Column(
       children: [
         filmstrip,
