@@ -84,13 +84,11 @@ class FlipBox extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
-          width: 40,
-          height: 60,
+          constraints: BoxConstraints.tight(Size(120, 180)),
           child: FittedBox(
             fit: BoxFit.contain,
             child: Text(str,
                 style: TextStyle(
-                    // fontFamily: 'Orbitron',
                     fontWeight: FontWeight.bold,
                     fontSize: 60,
                     color: Colors.white)),
