@@ -10,12 +10,6 @@ import 'package:final_countdown/data/countdown_provider.dart';
 import 'package:final_countdown/utils.dart';
 import 'package:final_countdown/clocks/simple_clock.dart';
 
-final clockFont = TextStyle(
-  fontWeight: FontWeight.bold,
-  fontFamily: 'Fascinate_Inline',
-  fontSize: 64,
-);
-
 class PhotoClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
