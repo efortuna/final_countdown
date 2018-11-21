@@ -46,13 +46,8 @@ class _PhotographerState extends State<Photographer> {
   @override
   void initState() {
     _cameraDirection = CameraLensDirection.front;
+    _countdownSubscription = widget.countdown.stream.listen((Duration d) {});
     super.initState();
-  }
-
-  @override
-  dispose() {
-    _countdownSubscription.cancel();
-    super.dispose();
   }
 
   Future<List<String>> populateFromStorage() async {
@@ -62,7 +57,7 @@ class _PhotographerState extends State<Photographer> {
         .where((FileSystemEntity e) => e is File && e.path.endsWith('jpg'))
         .map<String>((FileSystemEntity file) => file.path)
         .toList()
-          ..sort();
+          ..sort((a, b) => -a.compareTo(b));
     return _photos;
   }
 
@@ -82,7 +77,8 @@ class _PhotographerState extends State<Photographer> {
   takePicture() async {
     await initializeCamera();
     var directory = await getApplicationDocumentsDirectory();
-    var filePath = '${directory.path}/${prettyPrintDigits(_photos.length)}.jpg';
+    var filename = prettyPrintDigits((await populateFromStorage()).length);
+    var filePath = '${directory.path}/$filename.jpg';
     try {} on CameraException catch (e) {
       print('There was a problem taking the picture. $e');
       return false;
@@ -95,10 +91,12 @@ class _PhotographerState extends State<Photographer> {
     return FutureBuilder(
       future: populateFromStorage(),
       builder: (BuildContext context, AsyncSnapshot<List<String>> photosList) {
+        bool hasImage = photosList.hasData && _photos.length > 0;
         return Column(
           children: <Widget>[
-            cameraTop,
-            cameraBottom,
+            Expanded(
+                child:
+                    hasImage ? Image.file(File(_photos.first)) : Container()),
           ],
         );
       },
@@ -125,6 +123,12 @@ class _PhotographerState extends State<Photographer> {
                 fontSize: 32)),
         onPressed: _switchCameraDirection);
   }
+
+  @override
+  dispose() {
+    _countdownSubscription.cancel();
+    super.dispose();
+  }
 }
 
 class Filmstrip extends StatelessWidget {
@@ -135,21 +139,8 @@ class Filmstrip extends StatelessWidget {
     return Expanded(
       child: Container(
         color: Colors.black,
-        child: EmptyFilmStrip(),
+        child: Container(),
       ),
-    );
-  }
-}
-
-class EmptyFilmStrip extends StatelessWidget {
-  final emptyFilmstrip = Image.asset('assets/filmstrip_edge.jpg',
-      height: 20, width: 1000, repeat: ImageRepeat.repeatX);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [emptyFilmstrip, emptyFilmstrip],
     );
   }
 }
