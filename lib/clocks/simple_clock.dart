@@ -12,7 +12,7 @@ class SimpleClock extends StatelessWidget {
     return Center(
       child: StreamBuilder(
         stream: CountdownProvider.of(context).stream,
-        builder: (context, snapshot) {
+        builder: (context, AsyncSnapshot<Duration> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
             case ConnectionState.waiting:

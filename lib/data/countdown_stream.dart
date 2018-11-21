@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:final_countdown/data/persistence.dart';
 
 /// Utility class that provides access to the time stream and also converts the
 /// time stream separate streams of the individual digits.
+/*
 class FinalCountdown {
   FinalCountdown(
     this.duration, {
@@ -45,5 +48,58 @@ class FinalCountdown {
     }
     // Wipe the cache
     if (persist) deleteDuration();
+  }
+}
+*/
+
+class FinalCountdown2 {
+  FinalCountdown2(
+    this.duration, {
+    this.frequency = const Duration(seconds: 1),
+  });
+
+  final Duration duration;
+  final Duration frequency;
+
+  Duration _remaining;
+  Duration get remaining => _remaining;
+
+  Stream<Duration> get stream async* {
+    _remaining = duration;
+    while (_remaining >= const Duration()) {
+      yield _remaining;
+      _remaining -= frequency;
+      await Future.delayed(frequency);
+    }
+  }
+}
+
+class PersistedFinalCountdown {
+  PersistedFinalCountdown(
+    Duration startingDuration, {
+    Duration frequency = const Duration(seconds: 1),
+  }) {
+    _controller = StreamController<Duration>();
+    _init(startingDuration, frequency);
+  }
+
+  _init(Duration startingDuration, Duration frequency) async {
+    final duration = await loadDuration(startingDuration);
+    _countdown = FinalCountdown2(duration, frequency: frequency);
+    await _controller.addStream(_countdown.stream);
+    // Persist the countdown and delete the cache when done
+    stream.listen((d) => print('HELLO'));
+    stream.listen(saveDuration, onDone: deleteDuration);
+  }
+
+  StreamController<Duration> _controller;
+  FinalCountdown2 _countdown;
+
+  Stream<Duration> get stream => _controller.stream.asBroadcastStream();
+  Duration get duration => _countdown.duration;
+  Duration get remaining => _countdown.remaining;
+
+  dispose() {
+    _controller?.close();
   }
 }

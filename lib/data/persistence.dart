@@ -11,6 +11,7 @@ Future<Duration> loadDuration(Duration defaultDuration) async {
 }
 
 void saveDuration(Duration duration) async {
+  print('Saving Duration');
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.setInt(durationKey, duration.inMilliseconds);
 }
