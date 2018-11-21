@@ -41,7 +41,7 @@ class _PhotographerState extends State<Photographer> {
 
   /// Normally this would not be a getter, but for consistency with
   /// cameraTop and ease of live-coding.
-  Stack get cameraBottom => _cameraDirectionButton();
+  Widget get cameraBottom => Image.asset('assets/camera_bottom.png');
 
   @override
   void initState() {
