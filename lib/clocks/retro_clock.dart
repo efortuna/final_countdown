@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flip_panel/flip_panel.dart';
 import 'package:final_countdown/data/countdown_provider.dart';
 
+final _digitTextStyle = TextStyle(
+  fontWeight: FontWeight.bold,
+  fontSize: 60,
+  color: Colors.white,
+);
+
 class RetroClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -21,7 +27,10 @@ class RetroClock extends StatelessWidget {
               borderRadius: BorderRadius.circular(20)),
           color: Colors.grey[800],
           elevation: 4,
-          child: FittedBox(child: ClockPanel()),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FittedBox(child: ClockPanel()),
+          ),
         ),
       ],
     );
@@ -35,37 +44,26 @@ class ClockPanel extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Row(
-          // TODO: On large screens, like iPads, this looks bad so spaced out.
-          // We need a different layout option.
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            StreamFlipDigit(countdown.tensMinuteDigitStream),
-            SizedBox(width: 5),
-            StreamFlipDigit(countdown.onesMinuteDigitStream),
-            SizedBox(width: 5),
+            FlipDigit(
+                stream: countdown.tensMinuteDigitStream,
+                initial: countdown.tensMinuteDigit),
+            SizedBox(width: 10),
+            FlipDigit(
+                stream: countdown.onesMinuteDigitStream,
+                initial: countdown.onesMinuteDigit),
+            SizedBox(width: 10),
             FlipBox(':'),
-            SizedBox(width: 5),
-            StreamFlipDigit(countdown.tensSecondDigitStream),
-            SizedBox(width: 5),
-            StreamFlipDigit(countdown.onesSecondDigitStream),
+            SizedBox(width: 10),
+            FlipDigit(
+                stream: countdown.tensSecondDigitStream,
+                initial: countdown.tensSecondDigit),
+            SizedBox(width: 10),
+            FlipDigit(
+                stream: countdown.onesSecondDigitStream,
+                initial: countdown.onesSecondDigit),
           ]),
-    );
-  }
-}
-
-class StreamFlipDigit extends StatelessWidget {
-  StreamFlipDigit(this.digitStream);
-  final Stream<int> digitStream;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: FlipPanel<int>.stream(
-          itemStream: digitStream,
-          direction: FlipDirection.down,
-          itemBuilder: (context, digit) {
-            return FlipBox('$digit');
-          }),
     );
   }
 }
@@ -77,24 +75,52 @@ class FlipBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      constraints: BoxConstraints.tight(Size(120, 180)),
       decoration: BoxDecoration(
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(10.0),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          constraints: BoxConstraints.tight(Size(120, 180)),
-          child: FittedBox(
-            fit: BoxFit.contain,
-            child: Text(str,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 60,
-                    color: Colors.white)),
-          ),
-        ),
+      child: FittedBox(
+        fit: BoxFit.contain,
+        child: Text(str, style: _digitTextStyle),
       ),
     );
   }
 }
+
+class FlipDigit extends StatelessWidget {
+  FlipDigit({@required this.stream, this.initial = 0});
+  final Stream<int> stream;
+  final int initial;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: FlipPanel<int>.stream(
+          itemStream: stream,
+          initValue: initial,
+          direction: FlipDirection.down,
+          itemBuilder: (_, digit) {
+            return FlipBox('$digit');
+          }),
+    );
+  }
+}
+
+/*
+class FlipTextTheme extends StatelessWidget {
+  FlipTextTheme({this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
+      data: ThemeData(textTheme: Theme.of(context).textTheme.body1.copyWith(
+        fontWeight: FontWeight.bold,
+  fontSize: 60,
+  color: Colors.white,)),
+      child: child,
+    );
+  }
+}
+*/
