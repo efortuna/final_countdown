@@ -37,13 +37,14 @@ class CountdownProvider extends InheritedWidget {
   final _tensSecondDigitSubject = BehaviorSubject<int>();
   final _onesSecondDigitSubject = BehaviorSubject<int>();
 
-  get stream => _subject.stream;
-  get mostRecentTime => _subject.value;
+  Stream<Duration> get stream => _subject.stream;
+  Stream<Duration> get minuteStream => countdown.minuteStream;
+  Duration get mostRecentTime => _subject.value;
 
-  get tensMinuteDigitStream => _tensMinuteDigitSubject.stream;
-  get onesMinuteDigitStream => _onesMinuteDigitSubject.stream;
-  get tensSecondDigitStream => _tensSecondDigitSubject.stream;
-  get onesSecondDigitStream => _onesSecondDigitSubject.stream;
+  Stream<int> get tensMinuteDigitStream => _tensMinuteDigitSubject.stream;
+  Stream<int> get onesMinuteDigitStream => _onesMinuteDigitSubject.stream;
+  Stream<int> get tensSecondDigitStream => _tensSecondDigitSubject.stream;
+  Stream<int> get onesSecondDigitStream => _onesSecondDigitSubject.stream;
 
   get tensMinuteDigit => _tensMinuteDigitSubject.value;
   get onesMinuteDigit => _onesMinuteDigitSubject.value;

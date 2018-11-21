@@ -11,21 +11,17 @@ import 'package:final_countdown/data/countdown_provider.dart';
 import 'package:final_countdown/clocks/simple_clock.dart';
 import 'package:final_countdown/utils.dart';
 
+final clockFont = TextStyle(
+  fontWeight: FontWeight.bold,
+  fontFamily: 'Fascinate_Inline',
+  fontSize: 64,
+);
+
 class PhotoClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          SimpleClock(TextStyle(
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Fascinate_Inline',
-            fontSize: 64,
-          )),
-          Expanded(child: Photographer(CountdownProvider.of(context))),
-        ],
-      ),
+      child: Photographer(CountdownProvider.of(context)),
     );
   }
 }
@@ -42,16 +38,23 @@ class _PhotographerState extends State<Photographer> {
   CameraController _controller;
   CameraLensDirection _cameraDirection;
   StreamSubscription _countdownSubscription;
+  Image cameraTop = Image.asset('assets/camera_top.png');
+
+  /// Normally this would not be a getter, but for consistency with
+  /// cameraTop and ease of live-coding.
+  Stack get cameraBottom => Stack(
+        alignment: AlignmentDirectional.center,
+        children: <Widget>[
+          Image.asset('assets/camera_bottom.png'),
+          _cameraDirectionButton(),
+        ],
+      );
 
   @override
   void initState() {
     _cameraDirection = CameraLensDirection.front;
-    _countdownSubscription =
-        widget.countdown.stream.listen((Duration currentTime) {
-      if (currentTime.inSeconds % 10 == 0 && currentTime.inSeconds != 0) {
-        takePicture();
-      }
-    });
+    _countdownSubscription = widget.countdown.minuteStream
+        .listen((Duration currentTime) => takePicture());
     super.initState();
   }
 
@@ -61,7 +64,7 @@ class _PhotographerState extends State<Photographer> {
     super.dispose();
   }
 
-  Future<bool> populateFromStorage() async {
+  Future<List<String>> populateFromStorage() async {
     Directory dir = await getApplicationDocumentsDirectory();
     _photos = dir
         .listSync()
@@ -70,7 +73,7 @@ class _PhotographerState extends State<Photographer> {
         .toList()
           ..sort();
     print('NUMBER OF PHOTOS IN STORAGE: ${_photos.length} $_photos');
-    return true;
+    return _photos;
   }
 
   initializeCamera() async {
@@ -82,7 +85,7 @@ class _PhotographerState extends State<Photographer> {
       _controller = CameraController(frontCamera, ResolutionPreset.high);
       await _controller.initialize();
     } on StateError catch (e) {
-      print('No front-facing camera found: $e');
+      print('No camera found in the direction $_cameraDirection: $e');
     }
   }
 
@@ -107,18 +110,13 @@ class _PhotographerState extends State<Photographer> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: populateFromStorage(),
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
         return Column(
           children: <Widget>[
-            Image.asset('assets/camera_top.png'),
-            Filmstrip(snapshot.hasData ? _photos : []),
-            Stack(
-              alignment: AlignmentDirectional.center,
-              children: <Widget>[
-                Image.asset('assets/camera_bottom.png'),
-                _cameraDirectionButton(),
-              ],
-            ),
+            SimpleClock(clockFont),
+            cameraTop,
+            Filmstrip(snapshot.hasData ? snapshot.data : []),
+            cameraBottom,
           ],
         );
       },
@@ -126,24 +124,24 @@ class _PhotographerState extends State<Photographer> {
   }
 
   _cameraDirectionButton() {
+    _switchCameraDirection() {
+      setState(() => _cameraDirection =
+          (_cameraDirection == CameraLensDirection.back)
+              ? CameraLensDirection.front
+              : CameraLensDirection.back);
+    }
+
     return RaisedButton(
         color: Colors.white,
         child: Text(
             _cameraDirection == CameraLensDirection.back
-                ? 'Front Camera'
-                : 'Back Camera',
+                ? 'Take Selfie'
+                : 'Use Back Camera',
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Fascinate_Inline',
                 fontSize: 32)),
         onPressed: _switchCameraDirection);
-  }
-
-  _switchCameraDirection() {
-    setState(() => _cameraDirection =
-        (_cameraDirection == CameraLensDirection.back)
-            ? CameraLensDirection.front
-            : CameraLensDirection.back);
   }
 }
 
@@ -192,8 +190,8 @@ class FilmImage extends StatelessWidget {
         Expanded(
             // TODO: Fix underlying plugin bug.
             child: image), //Theme.of(context).platform == TargetPlatform.iOS
-                //? Transform.rotate(angle: math.pi / 2, child: image)
-                //: image),
+        //? Transform.rotate(angle: math.pi / 2, child: image)
+        //: image),
         filmstrip,
       ],
     );
