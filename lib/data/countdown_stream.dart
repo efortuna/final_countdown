@@ -15,10 +15,13 @@ class FinalCountdown {
   final Stream<Duration> time;
   final Duration duration;
 
+  Stream<Duration> get minuteStream =>
+      time.where((Duration d) => d.inSeconds % 60 == 0);
+
   Stream<int> get tensMinuteDigit =>
-      time.map<int>((Duration d) => d.inMinutes ~/ 10);
+      minuteStream.map<int>((Duration d) => d.inMinutes ~/ 10);
   Stream<int> get onesMinuteDigit =>
-      time.map<int>((Duration d) => d.inMinutes % 10);
+      minuteStream.map<int>((Duration d) => d.inMinutes % 10);
   Stream<int> get tensSecondDigit =>
       time.map<int>((Duration d) => (d.inSeconds % 60) ~/ 10);
   Stream<int> get onesSecondDigit =>

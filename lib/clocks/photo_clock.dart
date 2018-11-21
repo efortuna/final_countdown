@@ -20,12 +20,7 @@ class PhotoClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Expanded(child: Photographer(CountdownProvider.of(context))),
-        ],
-      ),
+      child: Photographer(CountdownProvider.of(context)),
     );
   }
 }
@@ -42,12 +37,21 @@ class _PhotographerState extends State<Photographer> {
   CameraController _controller;
   CameraLensDirection _cameraDirection;
   StreamSubscription _countdownSubscription;
+  Image cameraTop = Image.asset('assets/camera_top.png');
+
+  /// Normally this would not be a getter, but for consistency with
+  /// cameraTop and ease of live-coding.
+  Stack get cameraBottom => Stack(
+        alignment: AlignmentDirectional.center,
+        children: <Widget>[
+          Image.asset('assets/camera_bottom.png'),
+          _cameraDirectionButton(),
+        ],
+      );
 
   @override
   void initState() {
     _cameraDirection = CameraLensDirection.front;
-    _countdownSubscription =
-        widget.countdown.stream.listen((Duration currentTime) {});
     super.initState();
   }
 
@@ -57,7 +61,7 @@ class _PhotographerState extends State<Photographer> {
     super.dispose();
   }
 
-  Future<bool> populateFromStorage() async {
+  Future<List<String>> populateFromStorage() async {
     Directory dir = await getApplicationDocumentsDirectory();
     _photos = dir
         .listSync()
@@ -65,7 +69,7 @@ class _PhotographerState extends State<Photographer> {
         .map<String>((FileSystemEntity file) => file.path)
         .toList()
           ..sort();
-    return true;
+    return _photos;
   }
 
   initializeCamera() async {
@@ -96,16 +100,11 @@ class _PhotographerState extends State<Photographer> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: populateFromStorage(),
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
         return Column(
           children: <Widget>[
-            Image.asset('assets/camera_top.png'),
-            Stack(
-              alignment: AlignmentDirectional.center,
-              children: <Widget>[
-                Image.asset('assets/camera_bottom.png'),
-              ],
-            ),
+            cameraTop,
+            cameraBottom,
           ],
         );
       },
@@ -113,24 +112,24 @@ class _PhotographerState extends State<Photographer> {
   }
 
   _cameraDirectionButton() {
+    _switchCameraDirection() {
+      setState(() => _cameraDirection =
+          (_cameraDirection == CameraLensDirection.back)
+              ? CameraLensDirection.front
+              : CameraLensDirection.back);
+    }
+
     return RaisedButton(
         color: Colors.white,
         child: Text(
             _cameraDirection == CameraLensDirection.back
-                ? 'Front Camera'
-                : 'Back Camera',
+                ? 'Take Selfie'
+                : 'Use Back Camera',
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Fascinate_Inline',
                 fontSize: 32)),
         onPressed: _switchCameraDirection);
-  }
-
-  _switchCameraDirection() {
-    setState(() => _cameraDirection =
-        (_cameraDirection == CameraLensDirection.back)
-            ? CameraLensDirection.front
-            : CameraLensDirection.back);
   }
 }
 
