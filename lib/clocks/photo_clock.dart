@@ -34,7 +34,7 @@ class Photographer extends StatefulWidget {
 
 class _PhotographerState extends State<Photographer> {
   List<String> _photos;
-  CameraController _controller;
+  CameraController _camera;
   CameraLensDirection _cameraDirection;
   StreamSubscription _countdownSubscription;
   Image cameraTop = Image.asset('assets/camera_top.png');
@@ -72,8 +72,8 @@ class _PhotographerState extends State<Photographer> {
       var frontCamera = cameraOptions.firstWhere(
           (description) => description.lensDirection == _cameraDirection,
           orElse: () => cameraOptions.first);
-      _controller = CameraController(frontCamera, ResolutionPreset.low);
-      await _controller.initialize();
+      _camera = CameraController(frontCamera, ResolutionPreset.low);
+      await _camera.initialize();
     } on StateError catch (e) {
       print('No camera found in the direction $_cameraDirection: $e');
     }
@@ -94,7 +94,7 @@ class _PhotographerState extends State<Photographer> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: populateFromStorage(),
-      builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<List<String>> photosList) {
         return Column(
           children: <Widget>[
             cameraTop,
