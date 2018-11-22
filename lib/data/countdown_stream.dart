@@ -1,49 +1,51 @@
+import 'dart:async';
+
 import 'package:final_countdown/data/persistence.dart';
 
-/// Utility class that provides access to the time stream and also converts the
-/// time stream separate streams of the individual digits.
 class FinalCountdown {
   FinalCountdown(
     this.duration, {
-    Duration frequency = const Duration(seconds: 1),
-    bool persist = true,
-  }) : time = _countdown(
-          duration,
-          frequency: frequency,
-          persist: persist,
-        ).asBroadcastStream();
-  final Stream<Duration> time;
+    this.frequency = const Duration(seconds: 1),
+  });
+
   final Duration duration;
+  final Duration frequency;
 
-  Stream<Duration> get minuteStream =>
-      time.where((Duration d) => d.inSeconds % 60 == 0);
+  Duration _remaining;
+  Duration get remaining => _remaining;
 
-  Stream<int> get tensMinuteDigit =>
-      minuteStream.map<int>((Duration d) => d.inMinutes ~/ 10);
-  Stream<int> get onesMinuteDigit =>
-      minuteStream.map<int>((Duration d) => d.inMinutes % 10);
-  Stream<int> get tensSecondDigit =>
-      time.map<int>((Duration d) => (d.inSeconds % 60) ~/ 10);
-  Stream<int> get onesSecondDigit =>
-      time.map<int>((Duration d) => (d.inSeconds % 60) % 10);
-
-  static Stream<Duration> _countdown(
-    Duration duration, {
-    Duration frequency = const Duration(seconds: 1),
-    persist = true,
-  }) async* {
-    // Check the cache for a stored duration
-    if (persist) duration = await loadDuration(duration);
-
-    var remaining = duration;
-    while (remaining >= const Duration()) {
-      yield remaining;
-      remaining -= frequency;
+  Stream<Duration> get stream async* {
+    _remaining = duration;
+    while (_remaining >= const Duration()) {
+      yield _remaining;
+      _remaining -= frequency;
       await Future.delayed(frequency);
-      // Save cache
-      if (persist) saveDuration(remaining);
     }
-    // Wipe the cache
-    if (persist) deleteDuration();
   }
+}
+
+class PersistedFinalCountdown {
+  PersistedFinalCountdown(
+    Duration startingDuration, {
+    Duration frequency = const Duration(seconds: 1),
+  }) {
+    _init(startingDuration, frequency);
+  }
+
+  _init(Duration startingDuration, Duration frequency) async {
+    final duration = await loadDuration(startingDuration);
+    _countdown = FinalCountdown(duration, frequency: frequency);
+    _controller.addStream(_countdown.stream);
+    // Persist the countdown and delete the cache when done
+    stream.listen(saveDuration, onDone: deleteDuration);
+  }
+
+  final _controller = StreamController<Duration>.broadcast();
+  FinalCountdown _countdown;
+
+  Stream<Duration> get stream => _controller.stream;
+  Duration get duration => _countdown.duration;
+  Duration get remaining => _countdown.remaining;
+
+  dispose() => _controller?.close();
 }
