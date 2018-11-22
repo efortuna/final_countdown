@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
@@ -8,14 +7,8 @@ import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:final_countdown/data/countdown_provider.dart';
-import 'package:final_countdown/clocks/simple_clock.dart';
 import 'package:final_countdown/utils.dart';
-
-final clockFont = TextStyle(
-  fontWeight: FontWeight.bold,
-  fontFamily: 'Fascinate_Inline',
-  fontSize: 64,
-);
+import 'package:final_countdown/clocks/simple_clock.dart';
 
 class PhotoClock extends StatelessWidget {
   @override
@@ -35,33 +28,29 @@ class Photographer extends StatefulWidget {
 
 class _PhotographerState extends State<Photographer> {
   List<String> _photos;
-  CameraController _controller;
+  CameraController _camera;
   CameraLensDirection _cameraDirection;
   StreamSubscription _countdownSubscription;
   Image cameraTop = Image.asset('assets/camera_top.png');
 
   /// Normally this would not be a getter, but for consistency with
   /// cameraTop and ease of live-coding.
-  Stack get cameraBottom => Stack(
-        alignment: AlignmentDirectional.center,
-        children: <Widget>[
-          Image.asset('assets/camera_bottom.png'),
-          _cameraDirectionButton(),
-        ],
-      );
+  Widget get cameraBottom => Stack(
+    alignment: AlignmentDirectional.center,
+    children: [
+      Image.asset('assets/camera_bottom.png'),
+      _cameraDirectionButton(),
+      ]
+  );
 
   @override
   void initState() {
     _cameraDirection = CameraLensDirection.front;
-    _countdownSubscription = widget.countdown.minuteStream
-        .listen((Duration currentTime) => takePicture());
+    takePicture();
+    _countdownSubscription = widget.countdown.stream.listen((Duration d) {
+      if (d.inSeconds % 60 == 0) takePicture();
+    });
     super.initState();
-  }
-
-  @override
-  dispose() {
-    _countdownSubscription.cancel();
-    super.dispose();
   }
 
   Future<List<String>> populateFromStorage() async {
@@ -71,8 +60,7 @@ class _PhotographerState extends State<Photographer> {
         .where((FileSystemEntity e) => e is File && e.path.endsWith('jpg'))
         .map<String>((FileSystemEntity file) => file.path)
         .toList()
-          ..sort();
-    print('NUMBER OF PHOTOS IN STORAGE: ${_photos.length} $_photos');
+          ..sort((a, b) => -a.compareTo(b));
     return _photos;
   }
 
@@ -82,8 +70,8 @@ class _PhotographerState extends State<Photographer> {
       var frontCamera = cameraOptions.firstWhere(
           (description) => description.lensDirection == _cameraDirection,
           orElse: () => cameraOptions.first);
-      _controller = CameraController(frontCamera, ResolutionPreset.high);
-      await _controller.initialize();
+      _camera = CameraController(frontCamera, ResolutionPreset.low);
+      await _camera.initialize();
     } on StateError catch (e) {
       print('No camera found in the direction $_cameraDirection: $e');
     }
@@ -92,13 +80,11 @@ class _PhotographerState extends State<Photographer> {
   takePicture() async {
     await initializeCamera();
     var directory = await getApplicationDocumentsDirectory();
-    var filePath = '${directory.path}/${prettyPrintDigits(_photos.length)}.jpg';
-    print('FILE APTH $filePath');
+    var filename = prettyPrintDigits((await populateFromStorage()).length);
+    var filePath = '${directory.path}/$filename.jpg';
     try {
-      await _controller.takePicture(filePath);
-      setState(() => _photos.insert(0,
-          filePath)); //TODO: ensure that this triggers the set state thing properly.
-      print('TAKIG A PICTURE!!!!!!');
+      await _camera.takePicture(filePath);
+      setState(() => _photos.insert(0, filePath));
     } on CameraException catch (e) {
       print('There was a problem taking the picture. $e');
       return false;
@@ -110,12 +96,16 @@ class _PhotographerState extends State<Photographer> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: populateFromStorage(),
-      builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<List<String>> photosList) {
         return Column(
           children: <Widget>[
-            SimpleClock(clockFont),
+            SimpleClock(TextStyle(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Fascinate_Inline',
+                fontSize: 64,
+            )),
             cameraTop,
-            Filmstrip(snapshot.hasData ? snapshot.data : []),
+            Filmstrip(photosList.hasData? photosList.data : []),
             cameraBottom,
           ],
         );
@@ -143,6 +133,12 @@ class _PhotographerState extends State<Photographer> {
                 fontSize: 32)),
         onPressed: _switchCameraDirection);
   }
+
+  @override
+  dispose() {
+    _countdownSubscription.cancel();
+    super.dispose();
+  }
 }
 
 class Filmstrip extends StatelessWidget {
@@ -153,25 +149,11 @@ class Filmstrip extends StatelessWidget {
     return Expanded(
       child: Container(
         color: Colors.black,
-        child: _photoPaths.length == 0
-            ? EmptyFilmStrip()
-            : ListView(
-                scrollDirection: Axis.horizontal,
-                children: _photoPaths.map((String s) => FilmImage(s)).toList()),
+        child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: _photoPaths.map((String s) => FilmImage(s)).toList(),
+        ),
       ),
-    );
-  }
-}
-
-class EmptyFilmStrip extends StatelessWidget {
-  final emptyFilmstrip = Image.asset('assets/filmstrip_edge.jpg',
-      height: 20, width: 1000, repeat: ImageRepeat.repeatX);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [emptyFilmstrip, emptyFilmstrip],
     );
   }
 }
@@ -182,16 +164,11 @@ class FilmImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var image = Image.file(File(path), height: 500);
     var filmstrip = Image.asset('assets/filmstrip_edge.jpg', height: 20);
     return Column(
       children: [
         filmstrip,
-        Expanded(
-            // TODO: Fix underlying plugin bug.
-            child: image), //Theme.of(context).platform == TargetPlatform.iOS
-        //? Transform.rotate(angle: math.pi / 2, child: image)
-        //: image),
+        Expanded(child: Image.file(File(path))),
         filmstrip,
       ],
     );
