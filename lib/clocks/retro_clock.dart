@@ -16,28 +16,32 @@ class RetroClock extends StatelessWidget {
       alignment: AlignmentDirectional.center,
       children: <Widget>[
         Positioned.fill(
-          child: Image.asset(
-            'assets/wood.jpg',
-            fit: BoxFit.cover,
-          ),
+          child: Image.asset('assets/wood.jpg', fit: BoxFit.cover),
         ),
-        Card(
-          shape: RoundedRectangleBorder(
-              side: BorderSide(color: Colors.white, width: 10.0),
-              borderRadius: BorderRadius.circular(20)),
-          color: Colors.grey[800],
-          elevation: 4,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: FittedBox(child: ClockPanel()),
-          ),
-        ),
+        ClockFrame(),
       ],
     );
   }
 }
 
-class ClockPanel extends StatelessWidget {
+class ClockFrame extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(
+          side: BorderSide(color: Colors.white, width: 10.0),
+          borderRadius: BorderRadius.circular(20)),
+      color: Colors.grey[800],
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: FittedBox(child: ClockFace()),
+      ),
+    );
+  }
+}
+
+class ClockFace extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final countdown = CountdownProvider.of(context);
@@ -68,6 +72,26 @@ class ClockPanel extends StatelessWidget {
   }
 }
 
+class FlipDigit extends StatelessWidget {
+  FlipDigit({
+    @required this.stream,
+    this.initial = 0,
+  });
+  final Stream<int> stream;
+  final int initial;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: FlipPanel<int>.stream(
+          itemStream: stream,
+          initValue: initial,
+          direction: FlipDirection.down,
+          itemBuilder: (_, digit) => FlipBox('$digit')),
+    );
+  }
+}
+
 class FlipBox extends StatelessWidget {
   FlipBox(this.str);
   final String str;
@@ -84,25 +108,6 @@ class FlipBox extends StatelessWidget {
         fit: BoxFit.contain,
         child: Text(str, style: _digitTextStyle),
       ),
-    );
-  }
-}
-
-class FlipDigit extends StatelessWidget {
-  FlipDigit({@required this.stream, this.initial = 0});
-  final Stream<int> stream;
-  final int initial;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: FlipPanel<int>.stream(
-          itemStream: stream,
-          initValue: initial,
-          direction: FlipDirection.down,
-          itemBuilder: (_, digit) {
-            return FlipBox('$digit');
-          }),
     );
   }
 }
