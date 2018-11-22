@@ -23,11 +23,11 @@ class CountdownProvider extends InheritedWidget {
     _tensMinuteDigitSubject
         .addStream(countdown.stream.map<int>((d) => d.inMinutes ~/ 10));
     _onesMinuteDigitSubject
-        .addStream(countdown.stream.map<int>((Duration d) => d.inMinutes % 10));
-    _tensSecondDigitSubject.addStream(
-        countdown.stream.map<int>((Duration d) => (d.inSeconds % 60) ~/ 10));
-    _onesSecondDigitSubject.addStream(
-        countdown.stream.map<int>((Duration d) => (d.inSeconds % 60) % 10));
+        .addStream(countdown.stream.map<int>((d) => d.inMinutes % 10));
+    _tensSecondDigitSubject
+        .addStream(countdown.stream.map<int>((d) => (d.inSeconds % 60) ~/ 10));
+    _onesSecondDigitSubject
+        .addStream(countdown.stream.map<int>((d) => (d.inSeconds % 60) % 10));
   }
 
   final Duration duration, frequency;
@@ -50,10 +50,10 @@ class CountdownProvider extends InheritedWidget {
   Stream<int> get tensSecondDigitStream => _tensSecondDigitSubject.stream;
   Stream<int> get onesSecondDigitStream => _onesSecondDigitSubject.stream;
 
-  int get tensMinuteDigit => _tensMinuteDigitSubject.value;
-  int get onesMinuteDigit => _onesMinuteDigitSubject.value;
-  int get tensSecondDigit => _tensSecondDigitSubject.value;
-  int get onesSecondDigit => _tensSecondDigitSubject.value;
+  int get tensMinuteDigit => _tensMinuteDigitSubject.value ?? 0;
+  int get onesMinuteDigit => _onesMinuteDigitSubject.value ?? 0;
+  int get tensSecondDigit => _tensSecondDigitSubject.value ?? 0;
+  int get onesSecondDigit => _tensSecondDigitSubject.value ?? 0;
 
   static CountdownProvider of(BuildContext context) =>
       context.inheritFromWidgetOfExactType(CountdownProvider);

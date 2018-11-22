@@ -1,7 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 const durationKey = 'duration';
-const photoStorageKey = 'photoStorage';
 
 Future<Duration> loadDuration(Duration defaultDuration) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -18,5 +17,4 @@ void saveDuration(Duration duration) async {
 void deleteDuration() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.remove(durationKey);
-  await prefs.remove(photoStorageKey);
 }
