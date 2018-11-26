@@ -5,6 +5,7 @@ import 'package:final_countdown/data/countdown_provider.dart';
 import 'package:final_countdown/clocks/simple_clock.dart';
 import 'package:final_countdown/clocks/retro_clock.dart';
 import 'package:final_countdown/clocks/photo_clock.dart';
+import 'package:final_countdown/styling.dart';
 
 void main() => runApp(CountdownApp());
 
@@ -17,7 +18,7 @@ class CountdownApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: CountdownProvider(
-        duration: const Duration(minutes: 15),
+        duration: const Duration(minutes: 0),
         child: CountdownPage(),
       ),
     );
@@ -28,13 +29,7 @@ class CountdownPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        children: <Widget>[
-          PhotoClock(),
-          SimpleClock(),
-          RetroClock(),
-        ],
-      ),
+      body: SimpleClock(digitBlackTextStyle),
     );
   }
 }
