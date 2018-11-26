@@ -1,13 +1,13 @@
 import 'package:flip_panel/flip_panel.dart';
 import 'package:flutter/material.dart';
 
-final digitWhiteTextStyle = TextStyle(
+const digitWhiteTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
   fontSize: 60,
   color: Colors.white,
 );
 
-final digitBlackTextStyle = TextStyle(
+const digitBlackTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
   fontSize: 60,
   color: Colors.black,

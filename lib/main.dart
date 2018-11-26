@@ -29,7 +29,7 @@ class CountdownPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SimpleClock(digitBlackTextStyle),
+      body: SimpleClock(),
     );
   }
 }
