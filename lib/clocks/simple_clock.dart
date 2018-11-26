@@ -6,7 +6,7 @@ import 'package:final_countdown/utils.dart';
 import 'package:final_countdown/styling.dart';
 
 class SimpleClock extends StatelessWidget {
-  SimpleClock([this.style = digitBlackTextStyle]);
+  SimpleClock({this.style = digitBlackTextStyle});
   final TextStyle style;
 
   @override
