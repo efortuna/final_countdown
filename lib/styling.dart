@@ -10,7 +10,7 @@ final digitWhiteTextStyle = TextStyle(
 final digitBlackTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
   fontSize: 60,
-  color: Colors.white,
+  color: Colors.black,
 );
 
 class FlipDigit extends StatelessWidget {
