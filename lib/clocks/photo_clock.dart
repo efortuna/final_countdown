@@ -7,6 +7,7 @@ import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:final_countdown/data/countdown_provider.dart';
+import 'package:final_countdown/data/file_stream_provider.dart';
 import 'package:final_countdown/utils.dart';
 import 'package:final_countdown/clocks/simple_clock.dart';
 
@@ -27,7 +28,6 @@ class Photographer extends StatefulWidget {
 }
 
 class _PhotographerState extends State<Photographer> {
-  List<String> _photos;
   CameraController _camera;
   CameraLensDirection _cameraDirection;
   StreamSubscription _countdownSubscription;
@@ -35,21 +35,11 @@ class _PhotographerState extends State<Photographer> {
   @override
   void initState() {
     _cameraDirection = CameraLensDirection.front;
+    takePicture();
     _countdownSubscription = widget.countdown.stream.listen((Duration d) {
       if (d.inSeconds % 60 == 0) takePicture();
     });
     super.initState();
-  }
-
-  Future<List<String>> populateFromStorage() async {
-    Directory dir = await getApplicationDocumentsDirectory();
-    _photos = dir
-        .listSync()
-        .where((FileSystemEntity e) => e is File && e.path.endsWith('jpg'))
-        .map<String>((FileSystemEntity file) => file.path)
-        .toList()
-          ..sort((a, b) => -a.compareTo(b));
-    return _photos;
   }
 
   initializeCamera() async {
@@ -68,11 +58,10 @@ class _PhotographerState extends State<Photographer> {
   takePicture() async {
     if (_camera == null) await initializeCamera();
     var directory = await getApplicationDocumentsDirectory();
-    var filename = prettyPrintDigits((await populateFromStorage()).length);
+    var filename = prettyPrintDigits(await numberOfExistingPictures());
     var filePath = '${directory.path}/$filename.jpg';
     try {
       await _camera.takePicture(filePath);
-      setState(() => _photos.insert(0, filePath));
     } on CameraException catch (e) {
       print('There was a problem taking the picture. $e');
       return false;
@@ -82,9 +71,9 @@ class _PhotographerState extends State<Photographer> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: populateFromStorage(),
-      builder: (BuildContext context, AsyncSnapshot<List<String>> photosList) {
+    return StreamBuilder(
+      stream: FileStreamProvider.of(context).stream, 
+      builder: (BuildContext context, AsyncSnapshot photosList) {
         return Column(
           children: <Widget>[
             SimpleClock(TextStyle(
@@ -103,8 +92,7 @@ class _PhotographerState extends State<Photographer> {
             )
           ],
         );
-      },
-    );
+      },);
   }
 
   _cameraDirectionButton() {
@@ -162,7 +150,10 @@ class FilmImage extends StatelessWidget {
     return Column(
       children: [
         filmstrip,
-        Expanded(child: Image.file(File(path))),
+        Expanded(child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Image.file(File(path)),
+        )),
         filmstrip,
       ],
     );
