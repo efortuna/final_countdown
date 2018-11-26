@@ -46,7 +46,6 @@ class _PhotographerState extends State<Photographer> {
   @override
   void initState() {
     _cameraDirection = CameraLensDirection.front;
-    takePicture();
     _countdownSubscription = widget.countdown.stream.listen((Duration d) {
       if (d.inSeconds % 60 == 0) takePicture();
     });
