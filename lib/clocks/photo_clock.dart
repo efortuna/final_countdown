@@ -31,17 +31,6 @@ class _PhotographerState extends State<Photographer> {
   CameraController _camera;
   CameraLensDirection _cameraDirection;
   StreamSubscription _countdownSubscription;
-  Image cameraTop = Image.asset('assets/camera_top.png');
-
-  /// Normally this would not be a getter, but for consistency with
-  /// cameraTop and ease of live-coding.
-  Widget get cameraBottom => Stack(
-    alignment: AlignmentDirectional.center,
-    children: [
-      Image.asset('assets/camera_bottom.png'),
-      _cameraDirectionButton(),
-      ]
-  );
 
   @override
   void initState() {
@@ -77,7 +66,7 @@ class _PhotographerState extends State<Photographer> {
   }
 
   takePicture() async {
-    await initializeCamera();
+    if (_camera == null) await initializeCamera();
     var directory = await getApplicationDocumentsDirectory();
     var filename = prettyPrintDigits((await populateFromStorage()).length);
     var filePath = '${directory.path}/$filename.jpg';
@@ -99,13 +88,19 @@ class _PhotographerState extends State<Photographer> {
         return Column(
           children: <Widget>[
             SimpleClock(TextStyle(
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Fascinate_Inline',
-                fontSize: 64,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Fascinate_Inline',
+              fontSize: 64,
             )),
-            cameraTop,
-            Filmstrip(photosList.hasData? photosList.data : []),
-            cameraBottom,
+            Image.asset('assets/camera_top.png'),
+            Filmstrip(photosList.hasData ? photosList.data : []),
+            Stack(
+              alignment: AlignmentDirectional.center,
+              children: [
+                Image.asset('assets/camera_bottom.png'),
+                _cameraDirectionButton(),
+              ],
+            )
           ],
         );
       },
@@ -149,8 +144,8 @@ class Filmstrip extends StatelessWidget {
       child: Container(
         color: Colors.black,
         child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: _photoPaths.map((String s) => FilmImage(s)).toList(),
+          scrollDirection: Axis.horizontal,
+          children: _photoPaths.map((String s) => FilmImage(s)).toList(),
         ),
       ),
     );
