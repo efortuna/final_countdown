@@ -133,7 +133,7 @@ class Filmstrip extends StatelessWidget {
     return Expanded(
       child: Container(
         color: Colors.black,
-        child: Container(),
+        child: FilmImage(_photoPaths.first),
       ),
     );
   }
@@ -149,7 +149,10 @@ class FilmImage extends StatelessWidget {
     return Column(
       children: [
         filmstrip,
-        Expanded(child: Image.file(File(path))),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Expanded(child: Image.file(File(path))),
+        ),
         filmstrip,
       ],
     );
