@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:final_countdown/data/countdown_provider.dart';
 import 'package:final_countdown/utils.dart';
+import 'package:final_countdown/styling.dart';
 
 class SimpleClock extends StatelessWidget {
-  SimpleClock([this.style]);
+  SimpleClock({this.style = digitBlackTextStyle});
   final TextStyle style;
 
   @override
