@@ -39,15 +39,18 @@ class FlipBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: BoxConstraints.tight(Size(120, 180)),
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: Text(str, style: digitWhiteTextStyle),
+    return Padding(
+      padding: const EdgeInsets.all(5),
+      child: Container(
+        constraints: BoxConstraints.tight(Size(120, 180)),
+        decoration: BoxDecoration(
+          color: Colors.grey[900],
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: FittedBox(
+          fit: BoxFit.contain,
+          child: Text(str, style: digitWhiteTextStyle),
+        ),
       ),
     );
   }
