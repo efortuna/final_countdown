@@ -16,7 +16,6 @@ class CountdownProvider extends InheritedWidget {
         assert(duration != null),
         countdown = PersistedFinalCountdown(duration, frequency: frequency),
         super(key: key, child: child) {
-    // _subject.addStream(countdown.stream);
     countdown.stream.pipe(_subject);
 
     _minuteSubject.addStream(
@@ -64,4 +63,6 @@ class CountdownProvider extends InheritedWidget {
 
   /// Reset the countdown
   void reset() => countdown.reset();
+
+  void dispose() => _subject?.close();
 }
