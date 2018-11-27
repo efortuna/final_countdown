@@ -12,7 +12,6 @@ void main() {
         textDirection: TextDirection.ltr,
         child: CountdownProvider(
           duration: const Duration(seconds: 2),
-          persist: false,
           child: SimpleClock(),
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:final_countdown/data/countdown_provider.dart';
+import 'package:final_countdown/data/file_stream_provider.dart';
 
 import 'package:final_countdown/clocks/simple_clock.dart';
 import 'package:final_countdown/clocks/retro_clock.dart';
@@ -18,7 +19,7 @@ class CountdownApp extends StatelessWidget {
       ),
       home: CountdownProvider(
         duration: const Duration(minutes: 15),
-        child: CountdownPage(),
+        child: FileStreamProvider(child: CountdownPage()),
       ),
     );
   }

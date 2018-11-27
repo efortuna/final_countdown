@@ -1,16 +1,30 @@
+import 'dart:io';
+
 import 'package:flip_panel/flip_panel.dart';
 import 'package:flutter/material.dart';
 
-final digitWhiteTextStyle = TextStyle(
+const digitWhiteTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
   fontSize: 60,
   color: Colors.white,
 );
 
-final digitBlackTextStyle = TextStyle(
+const digitBlackTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
   fontSize: 60,
   color: Colors.black,
+);
+
+const artDecoStyle = TextStyle(
+  fontWeight: FontWeight.bold,
+  fontFamily: 'Fascinate_Inline',
+  fontSize: 64,
+);
+
+const artDecoButtonStyle = TextStyle(
+  fontWeight: FontWeight.bold,
+  fontFamily: 'Fascinate_Inline',
+  fontSize: 32,
 );
 
 class FlipDigit extends StatelessWidget {
@@ -52,6 +66,26 @@ class FlipBox extends StatelessWidget {
           child: Text(str, style: digitWhiteTextStyle),
         ),
       ),
+    );
+  }
+}
+
+class FilmImage extends StatelessWidget {
+  FilmImage(this.path);
+  final String path;
+
+  @override
+  Widget build(BuildContext context) {
+    var filmstrip = Image.asset('assets/filmstrip_edge.jpg', height: 20);
+    return Column(
+      children: [
+        filmstrip,
+        Expanded(child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Image.file(File(path)),
+        )),
+        filmstrip,
+      ],
     );
   }
 }
