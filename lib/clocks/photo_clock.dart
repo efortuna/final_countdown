@@ -28,6 +28,7 @@ class _PhotographerState extends State<Photographer> {
   StreamSubscription _countdownSubscription;
   bool _frontCamera;
   Camera _camera;
+
   @override
   void initState() {
     _frontCamera = true;
@@ -40,31 +41,26 @@ class _PhotographerState extends State<Photographer> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FileStreamProvider.of(context).stream, 
-      builder: (BuildContext context, AsyncSnapshot photosList) {
-        return Column(
-          children: <Widget>[
-            SimpleClock(artDecoStyle),
-            Image.asset('assets/camera_top.png'),
-            Filmstrip(photosList.hasData ? photosList.data : []),
-            Stack(
-              alignment: AlignmentDirectional.center,
-              children: [
-                Image.asset('assets/camera_bottom.png'),
-                _cameraDirectionButton(),
-              ],
-            )
+    return Column(
+      children: <Widget>[
+        SimpleClock(artDecoStyle),
+        Image.asset('assets/camera_top.png'),
+        Filmstrip(),
+        Stack(
+          alignment: AlignmentDirectional.center,
+          children: [
+            Image.asset('assets/camera_bottom.png'),
+            _cameraDirectionButton(),
           ],
-        );
-      },);
+        )
+      ],
+    );
   }
 
   _cameraDirectionButton() {
     return RaisedButton(
         color: Colors.white,
-        child: Text(
-            _frontCamera ? 'Use Back Camera' : 'Take Selfie',
+        child: Text(_frontCamera ? 'Use Back Camera' : 'Take Selfie',
             style: artDecoButtonStyle),
         onPressed: _camera.switchDirection);
   }
@@ -77,18 +73,22 @@ class _PhotographerState extends State<Photographer> {
 }
 
 class Filmstrip extends StatelessWidget {
-  Filmstrip(this._photoPaths);
-  final List<String> _photoPaths;
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        color: Colors.black,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: _photoPaths.map((String s) => FilmImage(s)).toList(),
-        ),
-      ),
+    return StreamBuilder(
+      stream: FileStreamProvider.of(context).stream,
+      builder: (BuildContext context, AsyncSnapshot photosList) {
+        List<String> photoPaths = photosList.hasData ? photosList.data : [];
+        return Expanded(
+          child: Container(
+            color: Colors.black,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: photoPaths.map((String s) => FilmImage(s)).toList(),
+            ),
+          ),
+        );
+      },
     );
   }
 }
