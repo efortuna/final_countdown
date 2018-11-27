@@ -18,7 +18,8 @@ class FinalCountdownTimer {
   Duration get remaining => _remaining;
   Stream<Duration> get stream => _controller.stream;
 
-  void reset() => _remaining = duration;
+  void reset([Duration resetDuration]) =>
+      _remaining = resetDuration ?? duration;
 
   _init() {
     _remaining = duration;
@@ -57,7 +58,7 @@ class FinalCountdown {
 
 class PersistedFinalCountdown {
   PersistedFinalCountdown(
-    Duration startingDuration, {
+    this.startingDuration, {
     Duration frequency = const Duration(seconds: 1),
   }) {
     _init(startingDuration, frequency);
@@ -73,13 +74,14 @@ class PersistedFinalCountdown {
   }
 
   final _controller = StreamController<Duration>.broadcast();
+  final Duration startingDuration;
   FinalCountdownTimer _countdown;
 
   Stream<Duration> get stream => _controller.stream;
   Duration get duration => _countdown.duration;
   Duration get remaining => _countdown.remaining;
 
-  void reset() => _countdown.reset();
+  void reset() => _countdown.reset(startingDuration);
 
   dispose() => _controller?.close();
 }
