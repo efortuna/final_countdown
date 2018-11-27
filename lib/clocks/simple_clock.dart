@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 import 'package:final_countdown/data/countdown_provider.dart';
 import 'package:final_countdown/utils.dart';
@@ -9,25 +9,35 @@ class SimpleClock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final countdown = CountdownProvider.of(context);
     return Center(
-      child: StreamBuilder(
-        stream: CountdownProvider.of(context).stream,
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-              return Text('Waiting ...', style: style);
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          StreamBuilder(
+            stream: countdown.stream,
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                case ConnectionState.waiting:
+                  return Text('Waiting ...', style: style);
 
-            case ConnectionState.active:
-              return Text(
-                prettyPrintDuration(snapshot.data),
-                style: style,
-              );
+                case ConnectionState.active:
+                  return Text(
+                    prettyPrintDuration(snapshot.data),
+                    style: style,
+                  );
 
-            case ConnectionState.done:
-              return Text('Time\s up!', style: style);
-          }
-        },
+                case ConnectionState.done:
+                  return Text('Time\s up!', style: style);
+              }
+            },
+          ),
+          FlatButton(
+            child: Text('reset'),
+            onPressed: countdown.reset,
+          ),
+        ],
       ),
     );
   }
