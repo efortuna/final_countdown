@@ -18,6 +18,8 @@ class FinalCountdownTimer {
   Duration get remaining => _remaining;
   Stream<Duration> get stream => _controller.stream;
 
+  void reset() => _remaining = duration;
+
   _init() {
     _remaining = duration;
     Timer.periodic(frequency, (t) {
@@ -76,6 +78,8 @@ class PersistedFinalCountdown {
   Stream<Duration> get stream => _controller.stream;
   Duration get duration => _countdown.duration;
   Duration get remaining => _countdown.remaining;
+
+  void reset() => _countdown.reset();
 
   dispose() => _controller?.close();
 }

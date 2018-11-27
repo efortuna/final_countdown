@@ -60,4 +60,7 @@ class CountdownProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(InheritedWidget _) => false;
+
+  /// Reset the countdown
+  void reset() => countdown.reset();
 }
