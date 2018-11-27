@@ -16,7 +16,8 @@ class CountdownProvider extends InheritedWidget {
         assert(duration != null),
         countdown = PersistedFinalCountdown(duration, frequency: frequency),
         super(key: key, child: child) {
-    _subject.addStream(countdown.stream);
+    // _subject.addStream(countdown.stream);
+    countdown.stream.pipe(_subject);
 
     _minuteSubject.addStream(
         countdown.stream.where((Duration d) => d.inSeconds % 60 == 0));

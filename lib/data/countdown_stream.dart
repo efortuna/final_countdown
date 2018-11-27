@@ -67,8 +67,9 @@ class PersistedFinalCountdown {
   _init(Duration startingDuration, Duration frequency) async {
     final duration = await loadDuration(startingDuration);
     _countdown = FinalCountdownTimer(duration, frequency: frequency);
+
     // Add the countdown stream to the controller and delete cache when finished
-    _controller.addStream(_countdown.stream).then((_) => deleteDuration());
+    _countdown.stream.pipe(_controller).then((_) => deleteDuration());
     // Persist the countdown
     stream.listen(saveDuration);
   }
