@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import 'package:rxdart/rxdart.dart';
+
 import 'package:final_countdown/data/file_stream.dart';
 
 /// Use to maintain state between hot restarts
@@ -10,10 +12,15 @@ class FileStreamProvider extends InheritedWidget {
     Key key,
     @required Widget child,
   })  : assert(child != null),
-        stream = FileStream(),
-        super(key: key, child: child);
+        _stream = FileStream(),
+        super(key: key, child: child) {
+    _subject.addStream(_stream);
+  }
 
-  final FileStream stream;
+  final FileStream _stream;
+  final _subject = BehaviorSubject<List<String>>();
+
+  Stream<List<String>> get stream => _subject.stream;
 
   static FileStreamProvider of(BuildContext context) =>
       context.inheritFromWidgetOfExactType(FileStreamProvider);
