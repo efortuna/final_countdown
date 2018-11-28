@@ -62,7 +62,10 @@ class _PhotographerState extends State<Photographer> {
         color: Colors.white,
         child: Text(_frontCamera ? 'Use Back Camera' : 'Take Selfie',
             style: artDecoButtonStyle),
-        onPressed: _camera.switchDirection);
+        onPressed: () {
+          setState(() => _frontCamera = !_frontCamera);
+          _camera.switchDirection();
+        });
   }
 
   @override
