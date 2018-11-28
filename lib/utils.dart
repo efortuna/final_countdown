@@ -60,5 +60,6 @@ class Camera {
           (_cameraDirection == CameraLensDirection.back)
               ? CameraLensDirection.front
               : CameraLensDirection.back;
+    _camera = null;
   }
 }
