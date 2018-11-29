@@ -25,29 +25,35 @@ Future<int> numberOfExistingPictures() async {
 }
 
 class Camera {
-  CameraController _camera;
+  Camera() {
+    _initializeCameras();
+  }
+
+  CameraController _frontCamera, _backCamera;
   CameraLensDirection _cameraDirection = CameraLensDirection.front;
 
-  initializeCamera() async {
+  _initializeCameras() async {
     List<CameraDescription> cameraOptions = await availableCameras();
     try {
-      var frontCamera = cameraOptions.firstWhere(
-          (description) => description.lensDirection == _cameraDirection,
+      getCamera(CameraLensDirection direction) => cameraOptions.firstWhere(
+          (description) => description.lensDirection == direction,
           orElse: () => cameraOptions.first);
-      _camera = CameraController(frontCamera, ResolutionPreset.low);
-      await _camera.initialize();
+      _frontCamera = CameraController(getCamera(CameraLensDirection.front), ResolutionPreset.low);
+      _backCamera = CameraController(getCamera(CameraLensDirection.back), ResolutionPreset.low);
+      await _frontCamera.initialize();
+      await _backCamera.initialize();
     } on StateError catch (e) {
       print('No camera found in the direction $_cameraDirection: $e');
     }
   }
 
   takePicture() async {
-    if (_camera == null) await initializeCamera();
     var directory = await getApplicationDocumentsDirectory();
     var filename = prettyPrintDigits(await numberOfExistingPictures());
     var filePath = '${directory.path}/$filename.jpg';
     try {
-      await _camera.takePicture(filePath);
+      var camera = _cameraDirection == CameraLensDirection.front ? _frontCamera : _backCamera;
+      await camera.takePicture(filePath);
     } on CameraException catch (e) {
       print('There was a problem taking the picture. $e');
       return false;
@@ -60,6 +66,5 @@ class Camera {
           (_cameraDirection == CameraLensDirection.back)
               ? CameraLensDirection.front
               : CameraLensDirection.back;
-    _camera = null;
   }
 }
