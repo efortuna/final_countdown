@@ -6,53 +6,35 @@ class FinalCountdownTimer {
   FinalCountdownTimer(
     this.duration, {
     this.frequency = const Duration(seconds: 1),
-  }) {
-    _init();
-  }
+  });
 
   final Duration duration;
   final Duration frequency;
   final _controller = StreamController<Duration>();
 
+  Timer _timer;
   Duration _remaining;
+
   Duration get remaining => _remaining;
   Stream<Duration> get stream => _controller.stream;
 
-  void reset([Duration resetDuration]) =>
-      _remaining = resetDuration ?? duration;
-
-  _init() {
-    _remaining = duration;
-    Timer.periodic(frequency, (t) {
-      _controller.add(_remaining);
-      _remaining -= frequency;
-      if (_remaining < const Duration()) {
-        t.cancel();
-        _controller.close();
-      }
-    });
-  }
-}
-
-class FinalCountdown {
-  FinalCountdown(
-    this.duration, {
-    this.frequency = const Duration(seconds: 1),
-  });
-
-  final Duration duration;
-  final Duration frequency;
-
-  Duration _remaining;
-  Duration get remaining => _remaining;
-
-  Stream<Duration> get stream async* {
-    _remaining = duration;
-    while (_remaining >= const Duration()) {
-      yield _remaining;
-      _remaining -= frequency;
-      await Future.delayed(frequency);
+  start() {
+    if (_timer == null) {
+      _remaining = duration;
+      _timer = Timer.periodic(frequency, (t) {
+        _controller.add(_remaining);
+        _remaining -= frequency;
+        if (_remaining < const Duration()) {
+          t.cancel();
+          _controller.close();
+        }
+      });
     }
+  }
+
+  void dispose() {
+    _timer?.cancel();
+    _controller?.close();
   }
 }
 
@@ -72,17 +54,26 @@ class PersistedFinalCountdown {
     _countdown.stream.pipe(_controller).then((_) => deleteDuration());
     // Persist the countdown
     stream.listen(saveDuration);
+
+    // Auto-start the countdown if it was persisted
+    if (duration != startingDuration) {
+      _countdown.start();
+    }
   }
 
-  final _controller = StreamController<Duration>.broadcast();
   final Duration startingDuration;
+  final _controller = StreamController<Duration>.broadcast();
+
   FinalCountdownTimer _countdown;
 
   Stream<Duration> get stream => _controller.stream;
   Duration get duration => _countdown.duration;
   Duration get remaining => _countdown.remaining;
 
-  void reset() => _countdown.reset(startingDuration);
+  void start() => _countdown.start();
 
-  dispose() => _controller?.close();
+  void dispose() {
+    _countdown?.dispose();
+    _controller?.close();
+  }
 }

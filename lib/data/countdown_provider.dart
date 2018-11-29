@@ -3,35 +3,29 @@ import 'package:rxdart/rxdart.dart';
 
 import 'package:final_countdown/data/countdown_stream.dart';
 
-/// Use to maintain state between hot restarts
-/// Make sure you wrap this above the MaterialApp widget
-/// or hot reload will affect it
-class CountdownProvider extends InheritedWidget {
-  CountdownProvider({
-    Key key,
-    @required Widget child,
+/// Implements the logic for countdown streams
+class Countdown {
+  Countdown({
     @required this.duration,
     this.frequency = const Duration(seconds: 1),
-  })  : assert(child != null),
-        assert(duration != null),
-        countdown = PersistedFinalCountdown(duration, frequency: frequency),
-        super(key: key, child: child) {
-    countdown.stream.pipe(_subject);
+  })  : assert(duration != null),
+        _countdown = PersistedFinalCountdown(duration, frequency: frequency) {
+    _countdown.stream.pipe(_subject);
 
     _minuteSubject.addStream(
-        countdown.stream.where((Duration d) => d.inSeconds % 60 == 0));
+        _countdown.stream.where((Duration d) => d.inSeconds % 60 == 0));
     _tensMinuteDigitSubject
-        .addStream(countdown.stream.map<int>((d) => d.inMinutes ~/ 10));
+        .addStream(_countdown.stream.map<int>((d) => d.inMinutes ~/ 10));
     _onesMinuteDigitSubject
-        .addStream(countdown.stream.map<int>((d) => d.inMinutes % 10));
+        .addStream(_countdown.stream.map<int>((d) => d.inMinutes % 10));
     _tensSecondDigitSubject
-        .addStream(countdown.stream.map<int>((d) => (d.inSeconds % 60) ~/ 10));
+        .addStream(_countdown.stream.map<int>((d) => (d.inSeconds % 60) ~/ 10));
     _onesSecondDigitSubject
-        .addStream(countdown.stream.map<int>((d) => (d.inSeconds % 60) % 10));
+        .addStream(_countdown.stream.map<int>((d) => (d.inSeconds % 60) % 10));
   }
 
   final Duration duration, frequency;
-  final PersistedFinalCountdown countdown;
+  final PersistedFinalCountdown _countdown;
 
   final _subject = BehaviorSubject<Duration>();
   final _minuteSubject = BehaviorSubject<Duration>();
@@ -55,14 +49,72 @@ class CountdownProvider extends InheritedWidget {
   int get tensSecondDigit => _tensSecondDigitSubject.value ?? 0;
   int get onesSecondDigit => _tensSecondDigitSubject.value ?? 0;
 
-  static CountdownProvider of(BuildContext context) =>
-      context.inheritFromWidgetOfExactType(CountdownProvider);
+  void start() => _countdown.start();
+
+  void dispose() {
+    _countdown?.dispose();
+    _subject?.close();
+    _minuteSubject?.close();
+    _tensMinuteDigitSubject?.close();
+    _onesMinuteDigitSubject?.close();
+    _tensSecondDigitSubject?.close();
+    _onesSecondDigitSubject?.close();
+  }
+}
+
+/// Wrapping the countdown timers in a StatefulWidget so that
+/// timers an streams are disposed of properly
+class CountdownProviderModel extends StatefulWidget {
+  CountdownProviderModel({
+    this.child,
+    this.duration,
+    this.frequency = const Duration(seconds: 1),
+  });
+  final Widget child;
+  final Duration duration;
+  final Duration frequency;
 
   @override
-  bool updateShouldNotify(InheritedWidget _) => false;
+  createState() => _CountdownProviderModelState();
+}
 
-  /// Reset the countdown
-  void reset() => countdown.reset();
+class _CountdownProviderModelState extends State<CountdownProviderModel> {
+  Countdown _countdown;
 
-  void dispose() => _subject?.close();
+  @override
+  void initState() {
+    _countdown =
+        Countdown(duration: widget.duration, frequency: widget.frequency);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CountdownProvider(countdown: _countdown, child: widget.child);
+  }
+
+  @override
+  void dispose() {
+    _countdown?.dispose();
+    super.dispose();
+  }
+}
+
+/// Used to access the countdown streams in the widget tree
+class CountdownProvider extends InheritedWidget {
+  final Countdown countdown;
+  CountdownProvider({this.countdown, Widget child})
+      : assert(countdown != null),
+        assert(child != null),
+        super(child: child);
+
+  static Countdown of(BuildContext context) =>
+      (context.inheritFromWidgetOfExactType(CountdownProvider)
+              as CountdownProvider)
+          .countdown;
+
+  @override
+  bool updateShouldNotify(InheritedWidget oldWidget) {
+    return oldWidget != this;
+  }
 }

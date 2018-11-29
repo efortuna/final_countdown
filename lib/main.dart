@@ -18,7 +18,7 @@ class CountdownApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: CountdownProvider(
+      home: CountdownProviderModel(
           duration: const Duration(minutes: 15),
           child: FileStreamProvider(
             child: CountdownPage(),
