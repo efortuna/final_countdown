@@ -36,5 +36,5 @@ flutter:
   assets: 
     - assets/camera_top.png
     - assets/camera_bottom.png
-    - assets/filmstrip_edge.jpg
+    - assets/filmstrip.jpg
     - assets/wood.jpg

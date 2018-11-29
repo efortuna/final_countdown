@@ -76,7 +76,7 @@ class FilmImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var filmstrip = Image.asset('assets/filmstrip_edge.jpg', height: 20);
+    var filmstrip = Image.asset('assets/filmstrip.jpg', height: 20);
     return Column(
       children: [
         filmstrip,
