@@ -18,3 +18,10 @@ void deleteDuration() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.remove(durationKey);
 }
+
+/// Returns the duration if it exists, false if not
+Future<Duration> hasDuration() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  final duration = prefs.getInt(durationKey);
+  return duration != null ? Duration(milliseconds: duration) : null;
+}
