@@ -25,7 +25,6 @@ class SimpleClock extends StatelessWidget {
                 prettyPrintDuration(snapshot.data),
                 style: style,
               );
-
             case ConnectionState.done:
               return Text('Time\s up!', style: style);
           }
