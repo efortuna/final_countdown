@@ -43,6 +43,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.2"
+  fireworks:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: e77e3dcfe9f2cf74cd3a9502b090182bb8a20414
+      url: "https://github.com/efortuna/fireworks"
+    source: git
+    version: "0.0.1"
   flip_panel:
     dependency: "direct main"
     description:
@@ -102,6 +111,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.1"
+  pimp_my_button:
+    dependency: transitive
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "26bb34cbfc550e620123dda93aaf8288e3de5e98"
+      url: "git://github.com/Norbert515/pimp_my_button.git"
+    source: git
+    version: "0.0.1"
   quiver:
     dependency: transitive
     description:

@@ -18,7 +18,7 @@ class CountdownApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: CountdownProvider(
-        duration: const Duration(minutes: 15),
+        duration: const Duration(minutes: 1),
         child: FileStreamProvider(child: CountdownPage()),
       ),
     );

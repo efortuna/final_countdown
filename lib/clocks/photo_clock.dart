@@ -6,6 +6,8 @@ import 'package:final_countdown/data/file_stream_provider.dart';
 import 'package:final_countdown/utils.dart';
 import 'package:final_countdown/styling.dart';
 import 'package:final_countdown/clocks/simple_clock.dart';
+import 'package:final_countdown/data/countdown_provider.dart';
+import 'package:fireworks/fireworks.dart';
 
 class PhotoClock extends StatefulWidget {
   PhotoClock(this.countdownStream);
@@ -31,19 +33,35 @@ class _PhotoClockState extends State<PhotoClock> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        SimpleClock(style: artDecoStyle),
-        Image.asset('assets/camera_top.png'),
-        Filmstrip(),
-        Stack(
-          alignment: AlignmentDirectional.center,
-          children: [
-            Image.asset('assets/camera_bottom.png'),
-            _cameraDirectionButton(),
+    return StreamBuilder(
+      stream: CountdownProvider.of(context).stream,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        Widget extra = Container();
+        if (snapshot.connectionState == ConnectionState.done) {
+          extra = Fireworks();
+        }
+        var cameraDisplay = Column(
+          children: <Widget>[
+            SimpleClock(style: artDecoStyle),
+            Image.asset('assets/camera_top.png'),
+            Filmstrip(),
+            Stack(
+              alignment: AlignmentDirectional.center,
+              children: [
+                Image.asset('assets/camera_bottom.png'),
+                _cameraDirectionButton(),
+              ],
+            ),
           ],
-        )
-      ],
+        );
+
+        return Stack(
+          children: <Widget>[
+            cameraDisplay,
+            extra,
+          ],
+        );
+      },
     );
   }
 
