@@ -49,7 +49,7 @@ class Countdown {
   int get tensSecondDigit => _tensSecondDigitSubject.value ?? 0;
   int get onesSecondDigit => _tensSecondDigitSubject.value ?? 0;
 
-  void start() => _countdown.start();
+  void start(Duration duration) => _countdown.start(duration);
 
   void dispose() {
     _countdown?.dispose();

@@ -3,12 +3,10 @@ import 'dart:async';
 import 'package:final_countdown/data/persistence.dart';
 
 class FinalCountdownTimer {
-  FinalCountdownTimer(
-    this.duration, {
+  FinalCountdownTimer({
     this.frequency = const Duration(seconds: 1),
   });
 
-  final Duration duration;
   final Duration frequency;
   final _controller = StreamController<Duration>();
 
@@ -18,7 +16,7 @@ class FinalCountdownTimer {
   Duration get remaining => _remaining;
   Stream<Duration> get stream => _controller.stream;
 
-  start() {
+  start(Duration duration) {
     if (_timer == null) {
       _remaining = duration;
       _timer = Timer.periodic(frequency, (t) {
@@ -48,7 +46,7 @@ class PersistedFinalCountdown {
 
   _init(Duration startingDuration, Duration frequency) async {
     final duration = await loadDuration(startingDuration);
-    _countdown = FinalCountdownTimer(duration, frequency: frequency);
+    _countdown = FinalCountdownTimer(frequency: frequency);
 
     // Add the countdown stream to the controller and delete cache when finished
     _countdown.stream.pipe(_controller).then((_) => deleteDuration());
@@ -57,7 +55,7 @@ class PersistedFinalCountdown {
 
     // Auto-start the countdown if it was persisted
     if (duration != startingDuration) {
-      _countdown.start();
+      _countdown.start(duration);
     }
   }
 
@@ -67,10 +65,9 @@ class PersistedFinalCountdown {
   FinalCountdownTimer _countdown;
 
   Stream<Duration> get stream => _controller.stream;
-  Duration get duration => _countdown.duration;
   Duration get remaining => _countdown.remaining;
 
-  void start() => _countdown.start();
+  void start(Duration duration) => _countdown.start(duration);
 
   void dispose() {
     _countdown?.dispose();

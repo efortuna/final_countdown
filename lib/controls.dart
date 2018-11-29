@@ -33,13 +33,17 @@ class CountdownControlsState extends State<CountdownControls> {
                   DropdownMenuItem(value: 20, child: Text('20 mins')),
                   DropdownMenuItem(value: 15, child: Text('15 mins')),
                   DropdownMenuItem(value: 10, child: Text('10 mins')),
+                  DropdownMenuItem(value: 5, child: Text('5 mins')),
+                  DropdownMenuItem(value: 1, child: Text('1 min')),
                 ],
                 onChanged: (v) => setState(() => startTime = v),
               ),
               SizedBox(width: 30),
               RaisedButton(
                   child: Text('Start'),
-                  onPressed: () => CountdownProvider.of(context).start()),
+                  onPressed: () => CountdownProvider.of(context).start(
+                        Duration(minutes: startTime),
+                      )),
             ],
           ),
         ],
