@@ -28,10 +28,11 @@ class CountdownApp extends StatelessWidget {
 class CountdownPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final countdown = CountdownProvider.of(context);
     return Scaffold(
       body: PageView(
         children: <Widget>[
-          PhotoClock(),
+          PhotoClock(countdown.stream),
           SimpleClock(),
           RetroClock(),
         ],

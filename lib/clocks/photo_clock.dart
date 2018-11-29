@@ -2,29 +2,19 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'package:final_countdown/data/countdown_provider.dart';
 import 'package:final_countdown/data/file_stream_provider.dart';
 import 'package:final_countdown/utils.dart';
 import 'package:final_countdown/styling.dart';
 import 'package:final_countdown/clocks/simple_clock.dart';
 
-class PhotoClock extends StatelessWidget {
+class PhotoClock extends StatefulWidget {
+  PhotoClock(this.countdownStream);
+  final Stream<Duration> countdownStream;
   @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Photographer(CountdownProvider.of(context)),
-    );
-  }
+  _PhotoClockState createState() => _PhotoClockState();
 }
 
-class Photographer extends StatefulWidget {
-  Photographer(this.countdown);
-  final CountdownProvider countdown;
-  @override
-  _PhotographerState createState() => _PhotographerState();
-}
-
-class _PhotographerState extends State<Photographer> {
+class _PhotoClockState extends State<PhotoClock> {
   StreamSubscription _countdownSubscription;
   bool _frontCamera;
   Camera _camera;
@@ -32,8 +22,8 @@ class _PhotographerState extends State<Photographer> {
   @override
   void initState() {
     _frontCamera = true;
-    _camera = Camera()..takePicture();
-    _countdownSubscription = widget.countdown.stream.listen((Duration d) {
+    _camera = Camera();
+    _countdownSubscription = widget.countdownStream.listen((Duration d) {
       if (d.inSeconds % 60 == 0) _camera.takePicture();
     });
     super.initState();
@@ -43,7 +33,7 @@ class _PhotographerState extends State<Photographer> {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        SimpleClock(artDecoStyle),
+        SimpleClock(style: artDecoStyle),
         Image.asset('assets/camera_top.png'),
         Filmstrip(),
         Stack(
