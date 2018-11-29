@@ -30,7 +30,7 @@ class SimpleClock extends StatelessWidget {
                   );
 
                 case ConnectionState.done:
-                  return Text('Time\s up!', style: style);
+                  return Text('Time\'s up!', style: style);
               }
             },
           ),
