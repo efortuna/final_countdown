@@ -33,36 +33,21 @@ class _PhotoClockState extends State<PhotoClock> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: CountdownProvider.of(context).stream,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        Widget extra = Container();
-        if (snapshot.connectionState == ConnectionState.done) {
-          extra = Fireworks();
-        }
-        var cameraDisplay = Column(
-          children: <Widget>[
-            SimpleClock(style: artDecoStyle),
-            Image.asset('assets/camera_top.png'),
-            Filmstrip(),
-            Stack(
-              alignment: AlignmentDirectional.center,
-              children: [
-                Image.asset('assets/camera_bottom.png'),
-                _cameraDirectionButton(),
-              ],
-            ),
+    return FireworksOverlayWhenDone(
+        child: Column(
+      children: <Widget>[
+        SimpleClock(style: artDecoStyle),
+        Image.asset('assets/camera_top.png'),
+        Filmstrip(),
+        Stack(
+          alignment: AlignmentDirectional.center,
+          children: [
+            Image.asset('assets/camera_bottom.png'),
+            _cameraDirectionButton(),
           ],
-        );
-
-        return Stack(
-          children: <Widget>[
-            cameraDisplay,
-            extra,
-          ],
-        );
-      },
-    );
+        ),
+      ],
+    ));
   }
 
   _cameraDirectionButton() {
@@ -80,6 +65,26 @@ class _PhotoClockState extends State<PhotoClock> {
   dispose() {
     _countdownSubscription.cancel();
     super.dispose();
+  }
+}
+
+class FireworksOverlayWhenDone extends StatelessWidget {
+  FireworksOverlayWhenDone({@required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: CountdownProvider.of(context).stream,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        var extra = snapshot.connectionState == ConnectionState.done
+            ? Fireworks()
+             : Container();
+        return Stack(
+          children: <Widget>[child, extra],
+        );
+      },
+    );
   }
 }
 
