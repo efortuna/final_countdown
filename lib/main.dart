@@ -14,10 +14,7 @@ class CountdownApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'It\'s the final countdown!',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      title: 'Final Countdown',
       home: CountdownProviderModel(
           duration: const Duration(minutes: 15),
           child: FileStreamProvider(
