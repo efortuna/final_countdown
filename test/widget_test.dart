@@ -11,7 +11,7 @@ void main() {
       Directionality(
         textDirection: TextDirection.ltr,
         child: CountdownProvider(
-          duration: const Duration(seconds: 2),
+          // duration: const Duration(seconds: 2),
           child: SimpleClock(),
         ),
       ),
